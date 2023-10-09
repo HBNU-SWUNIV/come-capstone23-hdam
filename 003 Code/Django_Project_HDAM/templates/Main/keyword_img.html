@@ -1,0 +1,204 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>IMG Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+     <!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free-6.4.0-web/css/all.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!--Font 사용, 나눔스퀘어 글꼴-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fonts.css' %}">
+    <!-- Custom styles for this template-->
+    <link href="{%static 'css/main.css'%}" rel="stylesheet" />
+
+
+</head>
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+         <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'main' %}">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <img src="{% static 'assets/favicon.ico'%}">
+                </div>
+                <div class="sidebar-brand-text mx-3">HDAM</div>
+            </a>
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'main' %}">
+                    <span class="d-flex justify-content-center">Keyword Based</span>
+                    <span class="d-flex justify-content-center">Economics Contents Curation</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="#" style="pointer-events: none;">
+                    <span class="d-flex justify-content-center">Article Page</span>
+                    <span class="d-flex justify-content-center">요약문에 대한 관련 기사 페이지</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+             <!-- Heading -->
+            <div class="sidebar-heading d-flex justify-content-center text-bg-light">
+                <span>선택한 일자</span>
+            </div>
+
+            <!-- Selected Date -->
+            <li class="nav-item active">
+                <a class="nav-link">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>{{date}}</span>
+                </a>
+            </li>
+
+            <!-- Heading -->
+            <div class="sidebar-heading d-flex justify-content-center text-bg-light">
+                <span>선택한 키워드</span>
+            </div>
+
+            {% for keyword in selected_keywords %}
+            <li class="nav-item active">
+                <a class="nav-link">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span>{{ keyword }}</span>
+                </a>
+            </li>
+            {% endfor %}
+
+            <!-- Divider -->
+            <hr class="sidebar-divider d-none d-md-block">
+
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper 사이드바의 오른쪽 부분 -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+               <!-- TopNavbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow justify-content-center">
+                    <div class="text-center ml-4 mt-2">
+                        <a href="{% url 'main' %}" style="text-decoration: none; color: black;">
+                            <h4>키워드 기반 경제 콘텐츠 큐레이션</h4>
+                        </a>
+                    </div>
+                </nav>
+                <!--End of TopNavbar-->
+
+                <!--Begin Page Content 네비게이션 아래 공간에 Conetents-->
+                <div class="container-fluid">
+
+                    <!-- Page Heading (NavBar와 똑같은 단어)-->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">선택한 키워드들에 대한 기사들</h1>
+                    </div>
+
+
+                    <!--기사의 썸네일, 타이틀, 링크를 담는 공간-->
+                     <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">기사 목록</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Earnings (Monthly) Card Example -->
+                                <div class="col-xl-3 col-md-6 mb-4">
+                                    <div class="card border-bottom-secondary shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <img
+                                                    src="https://imgnews.pstatic.net/image/469/2023/07/02/0000747549_001_20230702170701505.jpg?type=w800"
+                                                    alt="image"
+                                                    class="img-fluid"
+                                            >
+                                            <p>
+                                                <a
+                                                    class="text-center"
+                                                    target="_blank"
+                                                    href="https://n.news.naver.com/mnews/article/469/0000747549?sid=101">
+                                                        윤석열 정부 1년, 기업·자영업자들 경기 부정 전망 늘었다
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Earnings (Monthly) Card Example -->
+                                <div class="col-xl-3 col-md-6 mb-4">
+                                    <div class="card border-bottom-secondary shadow h-100 py-2">
+                                        <div class="card-body">
+                                            <img
+                                                    src="https://imgnews.pstatic.net/image/011/2023/07/02/0004208894_001_20230702223349764.jpg?type=w800"
+                                                    alt="image"
+                                                    class="img-fluid"
+                                            >
+                                            <p>
+                                                <a
+                                                    class="text-center"
+                                                    target="_blank"
+                                                    href="https://n.news.naver.com/mnews/article/011/0004208894?sid=101">
+                                                        외국인 불법 토지거래, 절반이 중국인
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <!--End Page content-->
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white shadow">
+                <div class="container text-center my-auto">
+                        <a class="btn btn-success" href="#" onclick="goBack()">
+                        <a class="btn btn-success" href="#" onclick="goBack()">
+                            <i class="fa-regular fa-newspaper"> </i>
+                            <span> 요약 기사문 보기</span>
+                        </a>
+                </div>
+                <!-- "요약 기사문 보기" 버튼 클릭시 뒤로가기. -->
+                <script>
+                    function goBack() {
+                      window.history.back();
+                    }
+                </script>
+            </footer>
+            <!-- End of Footer -->
+
+
+        </div>
+        <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+</body>
+</html>

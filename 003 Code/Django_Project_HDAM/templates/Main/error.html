@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Error Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+     <!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free-6.4.0-web/css/all.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!--Font 사용, 나눔스퀘어 글꼴-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fonts.css' %}">
+    <!-- Custom styles for this template-->
+    <link href="{%static 'css/main.css'%}" rel="stylesheet" />
+    <!--최신버전-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+</head>
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+         <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'main' %}">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <img src="{% static 'assets/favicon.ico'%}">
+                </div>
+                <div class="sidebar-brand-text mx-3">HDAM</div>
+            </a>
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'main' %}">
+                    <span class="d-flex justify-content-center">Keyword Based</span>
+                    <span class="d-flex justify-content-center">Economics Contents Curation</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="#" style="pointer-events: none;">
+                    <span class="d-flex justify-content-center">Error Page</span>
+                    <span class="d-flex justify-content-center">에러 페이지</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper 사이드바의 오른쪽 부분 -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow justify-content-center">
+                    <div class="text-center ml-4 mt-2">
+                        <a href="{% url 'main' %}" style="text-decoration: none; color: black;">
+                            <h4>키워드 기반 경제 콘텐츠 큐레이션</h4>
+                        </a>
+                    </div>
+                </nav>
+                <!--End of TopNavbar-->
+
+                <!--Begin Page Content 네비게이션 아래 공간에 Conetents-->
+<!--                <div class="container-fluid text-center">-->
+                <div class="container-fluid text-center d-flex flex-column align-items-center justify-content-center" style="height: 100vh;">
+                    <!-- Page Heading (NavBar와 똑같은 단어)-->
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+<!--                        <h1 class="h1 mb-0 text-gray-800">해당 날짜의 키워드에 대해 찾을 수 없습니다.</h1>-->
+                        <h1 class="h1 mb-0 text-gray-800">{{error_message}}</h1>
+                    </div>
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+                        <a href="{% url 'main' %}" class="btn btn-primary">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span> 메인 페이지로 이동하기 </span>
+                        </a>
+                    </div>
+
+                    <!-- 전처리 이후 데이터 표시 TEST-->
+<!--                    <div>-->
+<!--                        {% for key, value in result_dict.items %}-->
+<!--                            <span>{{ value.title }}</span>-->
+<!--                            <span>{{ value.agency }}</span>-->
+<!--                        {% endfor %}-->
+<!--                    </div>-->
+
+
+                </div>
+                <!--End Page content-->
+            </div>
+            <!-- End of Main Content -->
+
+
+        </div>
+        <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+
+</body>
+</html>

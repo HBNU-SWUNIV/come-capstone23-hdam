@@ -1,0 +1,31 @@
+@font-face {
+  font-family: 'NanumSquareNeo-bRg';
+  src: url('../fonts/NanumSquareNeo-bRg.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'NanumSqureNeo-cBd';
+  src: url('../fonts/NanumSquareNeo-cBd.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'NanumSqureNeo-dEb';
+  src: url('../fonts/NanumSquareNeo-dEb.ttf') format('truetype');
+}
+
+h1{
+  font-family: 'NanumSqureNeo-cBd', sans-serif;
+}
+
+nav{
+  font-family: 'NanumSqureNeo-dEb', sans-serif;
+}
+
+#important{
+  font-family: 'NanumSqureNeo-dEb', sans-serif;
+}
+
+.btn.btn-info {
+    font-family: 'NanumSqureNeo-cBd', sans-serif; /* 버튼 부분 폰트 선택 */
+}
+

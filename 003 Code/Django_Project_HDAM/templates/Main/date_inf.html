@@ -1,0 +1,246 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <!--최소 너비 설정-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0 shrink-to-fit=no">
+    <title>{{selected_context.date}} Analysis Result</title>
+
+
+     <!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free-6.4.0-web/css/all.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="{%static 'css/main.css'%}" rel="stylesheet" />
+    <!--Font 사용, 나눔스퀘어 글꼴-->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/fonts.css' %}">
+
+    <!--버튼을 체크박스 형태로 사용하기 위해 js-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</head>
+<!--<i class="fa-solid fa-arrow-right"></i> 화살표 fontawsome-->
+<!--<i class="fa-solid fa-square"></i> 네모 fontawesome-->
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <ul class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion" id="accordionSidebar">
+
+            <!-- Sidebar - Brand -->
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'main' %}">
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <img src="{% static 'assets/favicon.ico'%}">
+                </div>
+                <div class="sidebar-brand-text mx-3">HDAM</div>
+            </a>
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'main' %}">
+                    <span class="d-flex justify-content-center">Keyword Based</span>
+                    <span class="d-flex justify-content-center">Economics Contents Curation</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider my-0">
+
+             <!-- Nav Item - Dashboard -->
+            <li class="nav-item active">
+                <a class="nav-link" href="#" style="pointer-events: none;">
+                    <span class="d-flex justify-content-center">{{selected_context.date}}</span>
+                    <span class="d-flex justify-content-center">Analysis Result</span>
+                </a>
+            </li>
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+            <!-- Heading -->
+            <div class="sidebar-heading d-flex justify-content-center text-bg-light">
+                <span>Intro</span>
+            </div>
+
+            <!-- Nav Item - Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'main' %}">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <span>주제 소개</span>
+                </a>
+            </li>
+
+
+            <!-- Divider -->
+            <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading d-flex justify-content-center text-bg-light">
+                    <span>DATE</span>
+                </div>
+
+                {% for date in date_context %}
+                    <!-- Nav Item - Dashboard -->
+                    <li class="nav-item {% if date == selected_context.date %}active{% endif %}">
+                        <!--if click, move that day-->
+                        <a class="nav-link" href="{% url 'date-view' date=date %}">
+                            <i class="fa-solid fa-calendar-days"></i>
+                            <span>{{date}}</span>
+                        </a>
+                    </li>
+                {% endfor %}
+
+                <!-- End Divider -->
+                <hr class="sidebar-divider d-none d-md-block">
+
+        </ul>
+        <!-- End of Sidebar -->
+
+        <!-- Content Wrapper 사이드바의 오른쪽 부분 -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- TopNavbar -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow justify-content-center">
+
+                    <div class="text-center ml-4 mt-2">
+                        <a href="{% url 'main' %}" style="text-decoration: none; color: black;">
+                            <h4>키워드 기반 경제 콘텐츠 큐레이션</h4>
+                        </a>
+                    </div>
+
+                </nav>
+                <!--End of TopNavbar-->
+
+                <!--Begin Page Content 네비게이션 아래 공간에 Conetents-->
+                <div class="container-fluid">
+
+                    <!-- Page Heading (NavBar와 똑같은 단어)-->
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+                        <h1 class="h1 mb-0 text-gray-800">키워드 선택</h1>
+                    </div>
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+                        <h1 class="h5 mb-0 text-gray-800">키워드 버튼을 클릭하시면, 큐레이션이 시작됩니다.</h1>
+                    </div>
+
+
+                    <!--버튼 부분 container-->
+                    <div class="container fluid">
+                        <!--폼 시작, KEYWORD를 선택하여 submit한다. + date 정보를 넘겨준다.-->
+                        <!-- 나중에 name = keyword 인 것들을 main_sum 부분으로 넘겨줄 것임. (즉, 체크한 것)-->
+                        <form id="submitKeyword"action="{% url 'main_sum' date %}" method="post">
+                            {% csrf_token %}
+                             <!--고정 키워드 부분-->
+                            <div class="d-sm-flex align-items-center mb-4">
+                                <h1 class="h3 mb-0 text-gray-800">고정 키워드</h1>
+                            </div>
+
+                            <div class="btn-group mb-4">
+                                <!-- 체크박스에 name 속성과 value 속성 추가 -->
+                                {% for keyword in fix_keyword %}
+                                     <button class="btn btn-info" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
+                                {% endfor %}
+                            </div>
+
+                             <!--일일 키워드 부분-->
+                            <div class="d-sm-flex align-items-center mb-4">
+                                <h1 class="h3 mb-0 text-gray-800">어제의 일일 키워드</h1>
+                            </div>
+
+                            <div class="btn-group mb-4">
+                                <!-- 체크박스에 name 속성과 value 속성 추가 -->
+                                {% for keyword in day_keyword %}
+                                    <button class="btn btn-info" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
+                                {% endfor %}
+                            </div>
+
+                            <!--일일 키워드 부분-->
+                            <div class="d-sm-flex align-items-center mb-4">
+                                <h1 class="h3 mb-0 text-gray-800">복합 키워드</h1>
+                            </div>
+
+                            <div class="btn-group mb-4">
+                                <!-- 체크박스에 name 속성과 value 속성 추가 -->
+                                {% for keyword in mix_keyword %}
+                                    <button class="btn btn-info" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
+                                {% endfor %}
+                            </div>
+                        </form>
+                    </div>
+                    <!--Keyword Select div Fin-->
+
+
+
+
+                    <!-- Page Heading (NavBar와 똑같은 단어)-->
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+                      <h1 class="h1 mb-0 text-gray-800">일일 키워드 분석 결과</h1>
+                    </div>
+
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+                        <h1 class="h5 mb-0 text-gray-800">{{selected_context.date}}의 기사들에 대한 키워드 분석 결과입니다.</h1>
+                    </div>
+
+                    <!--Start Keyword analysis row-->
+                    <div class="row">
+                      <!--WordCloud Card-->
+                      <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 d-flex flex-column">
+                        <div class="card shadow mb-4 flex-grow-1">
+                          <!-- Card Header -->
+                          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-info">Word Cloud</h6>
+                          </div>
+                          <!-- Card Body -->
+                          <div class="card-body text-center">
+                            <img src="{{ wordcloud_image_url }}" alt="Word Cloud" class="img-fluid">
+                          </div>
+                        </div>
+                      </div>
+                      <!--End WordCloud Card-->
+
+                      <!-- Keyword Analysis Card -->
+                      <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 d-flex flex-column">
+                        <div class="card shadow mb-4 flex-grow-1">
+                          <!-- Card Header -->
+                          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-info">Keyword Analysis</h6>
+                          </div>
+                          <!-- Card Body -->
+                          <div class="card-body">
+                              <ul>
+                                {% for word, count in wordcloud_dict.items %}
+                                <li>{{ word }}: {{ count }}</li>
+                                {% endfor %}
+                              </ul>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                    <!--End of Keyword analysis row-->
+
+
+                </div>
+                <!--End Page content-->
+            </div>
+            <!-- End of Main Content -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+</body>
+</html>
