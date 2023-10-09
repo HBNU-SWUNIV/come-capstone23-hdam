@@ -5,3 +5,11 @@
  <span style="color:red">
  - **기업 기밀 데이터가 Github에 공개되었을 시의 책임은 공개한 학생에게 있음**
  </span>
+
+
+## Open Source
+
+**WEB**
+- Font Awesome https://fontawesome.com/
+- Start Bootstrap - SB Admin 2 https://startbootstrap.com/theme/sb-admin-2
+- 나눔스퀘어 네오 폰트 https://hangeul.naver.com/font
