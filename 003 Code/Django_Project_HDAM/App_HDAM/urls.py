@@ -25,9 +25,8 @@ urlpatterns = [
     path('', views.main, name='main'),
     path('error/', views.main_error, name='main_error'),
     path('<str:date>/', views.date_view, name='date-view'),
-    path('<str:date>/summary/', views.main_summary, name='main_sum'),
-    path('<str:date>/summary/img/', views.main_image, name='main_img'),
-    # path('img/', views.main_image, name='main_img'),
+    path('<str:date>/<str:keyword>/summary/', views.main_summary, name='main_sum'),
+    path('<str:date>/<str:keyword>/img/', views.main_image, name='main_img'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
