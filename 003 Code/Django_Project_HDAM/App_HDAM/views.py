@@ -35,12 +35,9 @@ from ko_sentence_transformers.models import KoBertTransformer
 # =============================================================================================
 # DynamoDB 연동하는 부분 (AWS와 ACCESS하기 위한 정보들은 프로젝트 로컬 디렉토리에 .env로 저장)
 def connect_dynamodb():
-    dynamodb = boto3.resource('dynamodb',
-        region_name = config('AWS_REGION_NAME'),
-        aws_access_key_id = config('AWS_ACCESS_KEY_ID'),
-        aws_secret_access_key = config('AWS_SECRET_ACCESS_KEY')
-    )
+    dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
     return dynamodb
+
 # 전역 변수로 dynamoDB와 연결.
 # 매번 다른 함수일때마다, DynamoDB를 연결 시켜 줄 필요는 없다.
 dynamodb = connect_dynamodb()
