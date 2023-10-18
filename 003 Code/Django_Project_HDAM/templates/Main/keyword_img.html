@@ -176,24 +176,16 @@
             </div>
             <!-- End of Main Content -->
 
-            <!-- Footer -->
+            <!-- Footer 다시 요약문 관련 페이지로 넘어가는 버튼 -->
             <footer class="sticky-footer bg-white shadow">
                 <div class="container text-center my-auto">
-                        <a class="btn btn-success" href="#" onclick="goBack()">
-                        <a class="btn btn-success" href="#" onclick="goBack()">
-                            <i class="fa-regular fa-newspaper"> </i>
+                        <a class="btn btn-success" href="{% url 'main_sum' date=date keyword=keyword%}">
+                            <i class="fa-solid fa-image"> </i>
                             <span> 요약 기사문 보기</span>
                         </a>
                 </div>
-                <!-- "요약 기사문 보기" 버튼 클릭시 뒤로가기. -->
-                <script>
-                    function goBack() {
-                      window.history.back();
-                    }
-                </script>
             </footer>
             <!-- End of Footer -->
-
 
         </div>
         <!-- End of Content Wrapper -->
