@@ -196,83 +196,26 @@ def date_view(request, date):
     return render(request, 'Main/date_inf.html', context)
 
 # checkbox의 항목을 받아. DynamoDB의 일자에서 해당하는 키워드에 대한 정보를 받아오고, 해당 기사를
-def main_summary(request, date):
-    # POST 형태로 키워드를 전달 받고, 코드를 실행하여 완성된 요약문을 출력시켜 보여주게 된다.
-    if request.method == 'POST':
-        # 이전 페이지에서 선택한 키워드를 리스트 형태로 ex) ['한국','일본']
-        # 전역 변수 선언으로, img 페이지에서도 볼 수 있도록
-        global selected_keywords # [미국], [미국,중국] 형태
-        selected_keywords = request.POST.getlist('keyword')[0].split(',') # 반점을 기준으로 split
+def main_summary(request, date, keyword):
+    global selected_keywords
+    selected_keywords = keyword.split('+')
 
-        # 각각의 키워드에 대한 정보를 받아오게 될 딕셔너리 생성
-        news_dict = dict()
-        dict_idx = 0
-
-        # # 테이블명은 선택한 날짜로 테이블을 받아와 준다.
-        # table_crawles_article = dynamodb.Table(date)
-        #
-        # # 선택한 키워드에 대한 정보를 하나씩 받아와 news_dict에 저장한다.
-        # for selected_keyword in selected_keywords:
-        #     # 선택한 키워드에 해당하는 기사 정보 가져오기 (가져와야 할 정보는, keyword, title, thumbnail, url, content)
-        #     response_keyword_inf = table_crawles_article.query(
-        #         KeyConditionExpression=Key('keyword').eq(selected_keyword) # 해당 키워드와 같은 항목만 가져오게 된다.
-        #     )
-        #
-        #     items = response_keyword_inf['Items'] # 해당하는 키워드와 같은 컬럼의 정보를 가져오게 된다.
-        #
-        #     # 아마 여러가지 컬럼이 걸렸을 것이다. 그것을 다 news_dict에 담는 작업을 진행해보자.(추후 전처리 과정을 위해)
-        #     for item in items:
-        #         news_dict[dict_idx] = {
-        #             'keyword': item['keyword'],
-        #             'title': item['title'],
-        #             'thumbnail' : item['thumbnail'],
-        #             'url': item['url'],
-        #             'content': item['content']
-        #         }
-        #         dict_idx += 1
-        #
-        # print(news_dict)
-
-        # 이 다음 keyword_dict를 전처리 코드로 넘겨준다. (아직 코드 미작성)
-
-        # 더미 데이터로 코드 실행시켜보기
-        # result = news_relation_analysis(data)
-
-        # 출력된 값 딕셔너리 형태로 만들어주기 (Template에 시각화 하기 위하여)
-        # result_dict = dict()
-        # for i in range(len(result)):
-        #     result_dict[i] = {
-        #         'title' : result['title'][i],
-        #         'agency' : result['agency'][i],
-        #         'url' : result['url'][i],
-        #         'content' : result['content'][i]
-        #     }
-
-        # 세션으로 다음 페이지로 전달
-        # request.session['result_dict'] = result_dict
-
-        # 웹 화면에 전달할 내용 시각적으로 제공
-        context = {
-            'selected_keywords': selected_keywords, # 선택한 키워드에 대한 정보
-            'date': date,  # Main Page에서 클릭한 날짜 정보
-            # 'result_dict' : result_dict, # 전처리된 결과물
-        }
-
-        return render(request, 'Main/keyword_summary.html', context)
-
-    return redirect('main_sum') # ? 우선
-
-def main_image(request, date):
-    # 세션을 통해 result_dict 전달 받기.
-    # result_dict = request.session.get('result_dict')
-    # if result_dict is not None:
-    #     print(result_dict)  # "some value" 출력
-
-
+    # 웹 화면에 전달할 내용 시각적으로 제공
     context = {
-        'selected_keywords': selected_keywords, # 전역변수 선언
+        'keyword' : keyword, # 선택한 키워드에 대한 정보
+        'selected_keywords': selected_keywords, # 선택한 키워드를 띄우기 보기위한 정보
         'date': date,  # Main Page에서 클릭한 날짜 정보
-        # 'reuslt_dict' : result_dict
+    }
+
+    return render(request, 'Main/keyword_summary.html', context)
+
+def main_image(request, date, keyword):
+
+    # 웹 화면에 전달할 내용 시각적으로 제공
+    context = {
+        'keyword' : keyword, # 선택한 키워드에 대한 정보
+        'selected_keywords': selected_keywords, # 선택한 키워드를 띄우기 보기위한 정보
+        'date': date,  # Main Page에서 클릭한 날짜 정보
     }
 
     return render(request, 'Main/keyword_img.html', context)
