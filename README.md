@@ -15,7 +15,7 @@
   
 ## System Design
   - ### 사용 언어 및 Tool
-  - "https://img.shields.io/badge/python-#3776AB?style=flat&logo=python&logoColor=white"
+ <img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=white"/>
   - ### 시스템 구성도
   - 
   - ### System Requirements
