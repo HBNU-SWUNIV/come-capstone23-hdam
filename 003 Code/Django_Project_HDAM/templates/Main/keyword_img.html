@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>IMG Page</title>
+    <title>요약문 관련 기사 정보</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
      <!-- Custom fonts for this template-->
@@ -117,58 +117,77 @@
                         <h1 class="h3 mb-0 text-gray-800">선택한 키워드들에 대한 기사들</h1>
                     </div>
 
-
-                    <!--기사의 썸네일, 타이틀, 링크를 담는 공간-->
-                     <div class="card shadow mb-4">
+                    <!--Begin of Big Card-->
+                    <div class="card shadow mb-4">
+                        <!--Big Card Head-->
                         <div class="card-header py-3">
                             <h6 class="m-0 font-weight-bold text-primary">기사 목록</h6>
                         </div>
+                        <!--Begin of Big Card Body-->
                         <div class="card-body">
                             <div class="row">
-                                <!-- Earnings (Monthly) Card Example -->
-                                <div class="col-xl-3 col-md-6 mb-4">
-                                    <div class="card border-bottom-secondary shadow h-100 py-2">
-                                        <div class="card-body">
-                                            <img
-                                                    src="https://imgnews.pstatic.net/image/469/2023/07/02/0000747549_001_20230702170701505.jpg?type=w800"
-                                                    alt="image"
-                                                    class="img-fluid"
-                                            >
-                                            <p>
-                                                <a
-                                                    class="text-center"
-                                                    target="_blank"
-                                                    href="https://n.news.naver.com/mnews/article/469/0000747549?sid=101">
-                                                        윤석열 정부 1년, 기업·자영업자들 경기 부정 전망 늘었다
-                                                </a>
-                                            </p>
+                                {% for item in page_obj %}
+                                    <!-- Begin of Small Card-->
+                                    <div class="col-xl-3 col-md-6 mb-4">
+                                        <div class="card border-bottom-secondary shadow h-100 py-2">
+                                            <!--Begin of Small Card Body-->
+                                            <div class="card-body">
+                                                <img src="{{item.THUMBNAIL}}" alt="image" class="img-fluid" />
+                                                <p>
+                                                    <a
+                                                        class="text-center"
+                                                        target="_blank"
+                                                        href="{{item.URL}}">
+                                                        {{item.TITLE}}
+                                                    </a>
+                                                </p>
+                                            </div>
+                                            <!--End of Small Card Body-->
                                         </div>
                                     </div>
-                                </div>
+                                    <!-- End of Small Card-->
 
-                                <!-- Earnings (Monthly) Card Example -->
-                                <div class="col-xl-3 col-md-6 mb-4">
-                                    <div class="card border-bottom-secondary shadow h-100 py-2">
-                                        <div class="card-body">
-                                            <img
-                                                    src="https://imgnews.pstatic.net/image/011/2023/07/02/0004208894_001_20230702223349764.jpg?type=w800"
-                                                    alt="image"
-                                                    class="img-fluid"
-                                            >
-                                            <p>
-                                                <a
-                                                    class="text-center"
-                                                    target="_blank"
-                                                    href="https://n.news.naver.com/mnews/article/011/0004208894?sid=101">
-                                                        외국인 불법 토지거래, 절반이 중국인
-                                                </a>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+                                    <!-- 2행 4열로 하기 위해 -->
+                                    {% if forloop.counter|divisibleby:4 and not forloop.last %}
+                                        </div><div class="row">
+                                    {% endif %}
+                                {% endfor %}
+                            </div> <!-- End of the last row -->
+                        </div>
+                        <!--End of Big Card Body-->
+                    </div>
+                    <!--End of Big Card-->
+
+                    <!--Begin of Page Selector-->
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+                        <div class="pagination d-flex align-items-center">
+                            {% if page_obj.has_previous %}
+                                <a class="btn btn-primary" href="?page=1">
+                                    <i class="fa-solid fa-angles-left"></i>
+                                </a>
+                                <a class="btn btn-primary" href="?page={{ page_obj.previous_page_number }}">
+                                    <i class="fa-solid fa-angle-left"></i>
+                                </a>
+                            {% endif %}
+
+                            <!-- Page Number Display -->
+                            <div class="form-control text-center mx-3 w-auto">
+                                <span>{{ page_obj.number }}</span> /
+                                <span>{{ page_obj.paginator.num_pages }}</span>
                             </div>
+
+                            {% if page_obj.has_next %}
+                                <a class="btn btn-primary" href="?page={{ page_obj.next_page_number }}">
+                                    <i class="fa-solid fa-angle-right"></i>
+                                </a>
+                                <a class="btn btn-primary" href="?page={{ page_obj.paginator.num_pages }}">
+                                    <i class="fa-solid fa-angles-right"></i>
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
+                    <!--End of Page Selector-->
+
 
 
                 </div>
@@ -178,8 +197,8 @@
 
             <!-- Footer 다시 요약문 관련 페이지로 넘어가는 버튼 -->
             <footer class="sticky-footer bg-white shadow">
-                <div class="container text-center my-auto">
-                        <a class="btn btn-success" href="{% url 'main_sum' date=date keyword=keyword%}">
+                <div class="container text-center my-auto mx-auto">
+                        <a class="btn btn-success" href="{% url 'main_sum' date=date keyword=keyword %}">
                             <i class="fa-solid fa-image"> </i>
                             <span> 요약 기사문 보기</span>
                         </a>
