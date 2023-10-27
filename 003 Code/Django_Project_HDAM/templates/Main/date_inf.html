@@ -146,7 +146,7 @@
                             {% for keyword in fix_keyword %}
                                  <!-- 요약 페이지로 이동하는 버튼 -->
                                 <a href="{% url 'main_sum' date=date keyword=keyword.VALUE %}">
-                                  <button class="btn btn-info" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
+                                  <button class="btn btn-info mr-2" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
                                 </a>
                             {% endfor %}
                         </div>
@@ -160,7 +160,7 @@
                             {% for keyword in day_keyword %}
                                 <!-- 요약 페이지로 이동하는 버튼 -->
                                 <a href="{% url 'main_sum' date=date keyword=keyword.VALUE %}">
-                                  <button class="btn btn-info" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
+                                  <button class="btn btn-info mr-2" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
                                 </a>
                             {% endfor %}
                         </div>
@@ -171,11 +171,10 @@
                         </div>
 
                         <div class="btn-group mb-4">
-                            <!-- 체크박스에 name 속성과 value 속성 추가 -->
                             {% for keyword in mix_keyword %}
                                 <!-- 요약 페이지로 이동하는 버튼 -->
                                 <a href="{% url 'main_sum' date=date keyword=keyword.VALUE %}">
-                                  <button class="btn btn-info" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
+                                  <button class="btn btn-info mr-2" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
                                 </a>
                             {% endfor %}
                         </div>
