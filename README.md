@@ -15,7 +15,7 @@
   
 ## System Design
   - ### 사용 언어 및 Tool
-    - <img src="https://img.shields.io/badge/Python-61DAFB?style=flat"/>
+    - <img src="https://img.shields.io/badge/Python-61DAFB?style=flat"&logo=python/>
   - ### 시스템 구성도
   - ![시스템 구성도](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/1146fc63-aa67-403d-8a51-cb2b81966a29)
   - ### System Requirements
