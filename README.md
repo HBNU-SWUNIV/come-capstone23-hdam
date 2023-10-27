@@ -27,7 +27,9 @@
   ![시스템 구성도](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/1146fc63-aa67-403d-8a51-cb2b81966a29)
   
   ### ▶️ Database
-    - 크롤링한 데이터 및 키워드 등의 정보를 저
+  -  크롤링한 데이터 및 키워드 등의 정보를 DynamoDB에 테이블을 지정하여 저장
+
+      ![데베(크기조정)](https://github.com/HBNU-SWUNIV/come-capstone23-pool/assets/125301371/7f5ecca7-029a-4782-a37c-bda79f3b4984)
 
   ### ▶️ 키워드 정보 제공
   -  고정 키워드, 일일 키워드, 복합 키워드의 정보를 제공
@@ -69,4 +71,4 @@
     ![최종 요약 결과(크기 조절)](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/0c39252d-4aed-4750-a4c3-fe7d6e3c3ea0)
   
 ## Project Outcome
-- ### 20XX 년 OO학술대회 
+
