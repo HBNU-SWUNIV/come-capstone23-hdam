@@ -25,8 +25,9 @@
     <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=Ubuntu&logoColor=white"><img src="https://img.shields.io/badge/NGINX-09639?style=for-the-badge&logo=NGINX&logoColor=white">
   ### ▶️ 시스템 구성도
   ![시스템 구성도](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/1146fc63-aa67-403d-8a51-cb2b81966a29)
+  
   ### ▶️ Database
-    - 추가 예정
+    - 크롤링한 데이터 및 키워드 등의 정보를 저
 
   ### ▶️ 키워드 정보 제공
   -  고정 키워드, 일일 키워드, 복합 키워드의 정보를 제공
@@ -45,7 +46,8 @@
 
   ### ▶️ 요약문 관련 기사 정보 제공
   -  선택한 키워드별 뉴스 기사들의 TF-IDF 수치를 기반으로 DBSCAN을 통해서 군집을 형성
-  -  그중에 선택 키워드들이 모두 포함된 내용이 주된 내용인 군집을 뽑어내어줌 (전처리 과정)
+  -  형성된 군집 중 선택 키워드들이 모두 포함된 내용이 주된 내용인 군집을 선별
+    ![유사도 수치(크기 조정)(](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/e3d45c11-3ddf-403f-80b7-626c1b2cbeb6)
 
   ### ▶️ 요약문 제공
   -  군집화된 뉴스 기사들을 다중문서 요약 알고리즘 중 응답시간이 빠르며 성능이 정확도가 가장 높은 TextRank 알고리즘을 사용하여 요약
@@ -58,7 +60,7 @@
  - ### 기대효과
    - 경제 관련 키워드를 사용하여 뉴스들을 검색하고, 검색된 기사들을 크롤링하여 다량의 뉴스 기사를 수집한다. 그리고 이를 요약함에 있어서 여러 검증을 거치며 다중 키워드와 최대로 관련된 기사를 수집하기에, 사용자에게 친화적이며 다중문서를 요약하여 출력하기에 사용자로 하여금 시간 절약에 큰 힘을 실어줄 수 있다. 특히 경제 관련 기사를 위주로 기사를 가져오기에 투자, 부동산, 금융 관련 등 경제 관련 다양한 분야에서 도움을 줄 수 있다
 
- - ### 모델 비교
+ - ### 요약 모델 비교
    - TextRank와 DivRank는 비 인공지능 기반의 알고리즘이지만 인공지능 모델인 Kobart, T-5에 비해 응답 속도가 빠르고, 예상보다 정확도가 높아 사용하게 되었다. 다만 위 성능의 경우 단일 문서 요약을 측정하였기에 다중 문서 요약 정확도와 다를 수 있지만 상당한 상관관계가 있을것으로 예측한다.
   
     ![모델 비교 그래프](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/9a7a4ace-f86e-44dd-9669-b2d4a6b4d85c)
