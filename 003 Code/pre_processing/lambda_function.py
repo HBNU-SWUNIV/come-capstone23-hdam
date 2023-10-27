@@ -1,48 +1,38 @@
 import json
-import numpy as np
 
-# 데베
+from boto3.dynamodb.conditions import Key, Attr
 import boto3
 
-# 로컬 모듈 impoprt
-from Fixed_Extract_Keyword import FixedKeywordCrawler
-
-# 시간 관련 라이브러리리
-from datetime import datetime
-import time
-
+import news_relation_analysis as nraf
 
 def lambda_handler(event, context):
     # TODO implement
 
-    # 고정 키워드를 추출
-    # Python list 형태로 10개의 고정 키워드를 추출한다 (통계청 - 뉴스기반검색 경제 키워드 이용)
-
-    print("======= 고정 키워드 크롤링을 시작합니다 =======")
-    fixedKeywords = FixedKeywordCrawler()
-    print("- 고정 키워드")
-    print(fixedKeywords)
-    print("======= 고정 키워드 크롤링을 마칩니다. =======")
-    print('\n')
-
-    ### 데베에 저장
-
-    # 테이블명 : 크롤링 한 날짜
-    date = str(datetime.now())
-    date = date[:date.rfind(' ')]
-
+    # DynamoDB 클라이언트 생성
     dynamodb = boto3.resource('dynamodb')
 
-    # 테이블에 저장(고정 키워드)
-    FIX_ID = 0
-    table = dynamodb.Table('KEYWORD')
-    with table.batch_writer() as batch:
-        for fixedKeyword in fixedKeywords:
-            batch.put_item(
-                Item={
-                    'DATE': date,
-                    'TYPE_ID': 'FIX_{}'.format(FIX_ID),
-                    'VALUE': fixedKeyword
-                }
-            )
-            FIX_ID += 1
+    # 테이블 이름
+    table = dynamodb.Table('2023-10-13')
+
+    n=0
+    news_dict = {}
+    response = None
+    while True:
+        if not response:
+            response = table.scan()
+        else:
+            response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+
+        for item in response['Items']:
+            news_dict[n] = {'keyword':item['keyword'],
+                'title':item['title'],
+                'content':item['content']
+            }
+            n += 1
+
+        if 'LastEvaluatedKey' not in response:
+            break  # 모든 페이지를 검색했으면 종료
+
+    a = nraf.news_relation_analysis(news_dict)
+
+    return a
