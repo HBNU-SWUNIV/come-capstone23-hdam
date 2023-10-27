@@ -63,6 +63,9 @@
    - TextRank와 DivRank는 비 인공지능 기반의 알고리즘이지만 인공지능 모델인 Kobart, T-5에 비해 응답 속도가 빠르고, 예상보다 정확도가 높아 사용하게 되었다. 다만 위 성능의 경우 단일 문서 요약을 측정하였기에 다중 문서 요약 정확도와 다를 수 있지만 상당한 상관관계가 있을것으로 예측한다.
   
 ![모델 비교 그래프](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/9a7a4ace-f86e-44dd-9669-b2d4a6b4d85c)
+
+ - ### 최종 결과
+![최종 요약 결과](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/f7629568-7d2e-452e-9179-d64622047033)
   
 ## Project Outcome
 - ### 20XX 년 OO학술대회 
