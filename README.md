@@ -15,7 +15,7 @@
   
 ## System Design
   - ### 사용 언어 및 Tool
- <img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=white"/>
+  - <img src="https://img.shields.io/badge/React-61DAFB?style=flat&logo=React&logoColor=white"/>
   - ### 시스템 구성도
   - 
   - ### System Requirements
