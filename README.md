@@ -65,7 +65,7 @@
 ![모델 비교 그래프](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/9a7a4ace-f86e-44dd-9669-b2d4a6b4d85c)
 
  - ### 최종 결과
-![최종 요약 결과](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/f7629568-7d2e-452e-9179-d64622047033)
+![최종 요약 결과(크기 조절)](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/4161da63-2c90-40fd-b369-6bd0398c082a)
   
 ## Project Outcome
 - ### 20XX 년 OO학술대회 
