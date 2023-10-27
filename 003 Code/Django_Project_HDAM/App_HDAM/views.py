@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.conf import settings
 from django.http import HttpResponse
+from django.core.paginator import Paginator
 import os
 
 # TO SEE THE DATE
@@ -197,25 +198,69 @@ def date_view(request, date):
 
 # checkbox의 항목을 받아. DynamoDB의 일자에서 해당하는 키워드에 대한 정보를 받아오고, 해당 기사를
 def main_summary(request, date, keyword):
-    global selected_keywords
-    selected_keywords = keyword.split('+')
+    selected_keywords = keyword.split('&') # 미국&중국을, 리스트 형태로 ["미국","중국"] 이런 형식으로 만들어주기
+
+    # DynamoDB에서 테이블 가져오기 위해 생성한 임시변수
+    if len(selected_keywords) >= 2:
+        temp_keywords_val = '&'.join(selected_keywords) # "미국+중국" 형태로 만들어주기
+    else:
+        temp_keywords_val = selected_keywords
+
+    # DynamoDB의 POSTPROECSSING 테이블 가져오기
+    table_postprocessing = dynamodb.Table('POSTPROCESSING')
+
+    # POSTPROCESSING 테이블에서 후처리 결과물 가져오기
+    response_postprocessing = table_postprocessing.query(
+        KeyConditionExpression=Key('DATE').eq(date) &
+                               Key('KEYWORDS').eq(temp_keywords_val)
+    )
+
+    # 최종 결과값
+    result_postprocessing = response_postprocessing['Items'][0]['CONTENT']
 
     # 웹 화면에 전달할 내용 시각적으로 제공
     context = {
+        'date': date,  # Main Page에서 클릭한 날짜 정보
         'keyword' : keyword, # 선택한 키워드에 대한 정보
         'selected_keywords': selected_keywords, # 선택한 키워드를 띄우기 보기위한 정보
-        'date': date,  # Main Page에서 클릭한 날짜 정보
+        'result_content' : result_postprocessing, # 최종 결과값
     }
 
     return render(request, 'Main/keyword_summary.html', context)
 
 def main_image(request, date, keyword):
+    selected_keywords = keyword.split('&')  # 미국&중국을, 리스트 형태로 ["미국","중국"] 이런 형식으로 만들어주기
+
+    # DynamoDB에서 테이블 가져오기 위해 생성한 임시변수
+    if len(selected_keywords) >= 2:
+        temp_keywords_val = '&'.join(selected_keywords)  # "미국+중국" 형태로 만들어주기
+    else:
+        temp_keywords_val = selected_keywords
+
+    # DynamoDB의 POSTPROECSSING 테이블 가져오기
+    table_preprocessing = dynamodb.Table('PREPROCESSING')
+
+    # POSTPROCESSING 테이블에서 후처리 결과물 가져오기
+    response_preprocessing = table_preprocessing.query(
+        KeyConditionExpression=Key('DATE').eq(date) &
+                               Key('KEYWORDS').begins_with(temp_keywords_val)
+    )
+
+    # 해당 요약문을 생성하게된, 전처리된 데이터
+    preprocessing_content = response_preprocessing['Items']
+
+    # Paginator로 한 페이지에 8(2x4)개만 나오게끔 구현
+    # Pagination 공식 문서 : https://docs.djangoproject.com/en/3.2/topics/pagination/
+    paginator = Paginator(preprocessing_content, 8)  # 페이지당 10개의 항목을 보여주도록 설정합니다.
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     # 웹 화면에 전달할 내용 시각적으로 제공
     context = {
-        'keyword' : keyword, # 선택한 키워드에 대한 정보
-        'selected_keywords': selected_keywords, # 선택한 키워드를 띄우기 보기위한 정보
+        'keyword': keyword,  # 선택한 키워드에 대한 정보
+        'selected_keywords': selected_keywords,  # 선택한 키워드를 띄우기 보기위한 정보
         'date': date,  # Main Page에서 클릭한 날짜 정보
+        'page_obj': page_obj,  # 페이지 정보
     }
 
     return render(request, 'Main/keyword_img.html', context)
