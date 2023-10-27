@@ -1,8 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import redirect
-from django.http import JsonResponse
-from django.conf import settings
-from django.http import HttpResponse
 from django.core.paginator import Paginator
 import os
 
@@ -10,7 +6,6 @@ import os
 from datetime import datetime, timedelta
 
 # TO USE DYNAMODB
-from decouple import config
 import boto3
 from boto3.dynamodb.conditions import Key
 
@@ -18,20 +13,8 @@ from boto3.dynamodb.conditions import Key
 from wordcloud import WordCloud
 import matplotlib
 matplotlib.use('Agg')  # 백엔드를 'Agg'로 설정하여 GUI를 사용하지 않도록 함
-import matplotlib.pyplot as plt
 import matplotlib.figure as fig
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-
-# 전처리 관련 Library
-import pandas as pd
-import numpy as np
-from konlpy.tag import Okt
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.cluster import DBSCAN
-from sentence_transformers import SentenceTransformer, models, util
-from ko_sentence_transformers.models import KoBertTransformer
-
 
 # =============================================================================================
 # DynamoDB 연동하는 부분 (AWS와 ACCESS하기 위한 정보들은 프로젝트 로컬 디렉토리에 .env로 저장)
@@ -161,8 +144,6 @@ def date_view(request, date):
 
         if keyword_name is not None and keyword_count is not None:
             wordcloud_dict[keyword_name] = int(keyword_count)
-
-    print(wordcloud_dict)
 
     # 워드 클라우드를 생성해주는 함수 호출. Parameter = date, wordcloud_dict
     if len(wordcloud_dict) > 0:
