@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>요약문 관련 기사 정보</title>
+    <title>Summary Page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
      <!-- Custom fonts for this template-->
@@ -16,9 +16,15 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/fonts.css' %}">
     <!-- Custom styles for this template-->
     <link href="{%static 'css/main.css'%}" rel="stylesheet" />
+    <!--Word Cloud-->
+    <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>-->
+    <!--최신버전-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
 </head>
+<!--<i class="fa-solid fa-arrow-right"></i> 화살표 fontawsome-->
+<!--<i class="fa-solid fa-square"></i> 네모 fontawesome-->
 <body id="page-top">
 
     <!-- Page Wrapper -->
@@ -51,8 +57,8 @@
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
                 <a class="nav-link" href="#" style="pointer-events: none;">
-                    <span class="d-flex justify-content-center">Article Page</span>
-                    <span class="d-flex justify-content-center">요약문에 대한 관련 기사 페이지</span>
+                    <span class="d-flex justify-content-center">Summary Page</span>
+                    <span class="d-flex justify-content-center">요약 정보</span>
                 </a>
             </li>
 
@@ -77,13 +83,14 @@
                 <span>선택한 키워드</span>
             </div>
 
+            <!-- 내가 선택했던 키워드가 무엇인지 보여주는 PART-->
             {% for keyword in selected_keywords %}
-            <li class="nav-item active">
-                <a class="nav-link">
-                    <i class="fa-solid fa-arrow-right"></i>
-                    <span>{{ keyword }}</span>
-                </a>
-            </li>
+                <li class="nav-item active">
+                    <a class="nav-link">
+                        <i class="fa-solid fa-arrow-right"></i>
+                        <span>{{ keyword }}</span>
+                    </a>
+                </li>
             {% endfor %}
 
             <!-- Divider -->
@@ -99,7 +106,6 @@
             <!-- Main Content -->
             <div id="content">
 
-               <!-- TopNavbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow justify-content-center">
                     <div class="text-center ml-4 mt-2">
                         <a href="{% url 'main' %}" style="text-decoration: none; color: black;">
@@ -113,94 +119,27 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading (NavBar와 똑같은 단어)-->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">선택한 키워드들에 대한 기사들</h1>
-                    </div>
-
-                    <!--Begin of Big Card-->
-                    <div class="card shadow mb-4">
-                        <!--Big Card Head-->
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">기사 목록</h6>
-                        </div>
-                        <!--Begin of Big Card Body-->
-                        <div class="card-body">
-                            <div class="row">
-                                {% for item in page_obj %}
-                                    <!-- Begin of Small Card-->
-                                    <div class="col-xl-3 col-md-6 mb-4">
-                                        <div class="card border-bottom-secondary shadow h-100 py-2">
-                                            <!--Begin of Small Card Body-->
-                                            <div class="card-body">
-                                                <img src="{{item.THUMBNAIL}}" alt="image" class="img-fluid" />
-                                                <p>
-                                                    <a
-                                                        class="text-center"
-                                                        target="_blank"
-                                                        href="{{item.URL}}">
-                                                        {{item.TITLE}}
-                                                    </a>
-                                                </p>
-                                            </div>
-                                            <!--End of Small Card Body-->
-                                        </div>
-                                    </div>
-                                    <!-- End of Small Card-->
-
-                                    <!-- 2행 4열로 하기 위해 -->
-                                    {% if forloop.counter|divisibleby:4 and not forloop.last %}
-                                        </div><div class="row">
-                                    {% endif %}
-                                {% endfor %}
-                            </div> <!-- End of the last row -->
-                        </div>
-                        <!--End of Big Card Body-->
-                    </div>
-                    <!--End of Big Card-->
-
-                    <!--Begin of Page Selector-->
                     <div class="d-sm-flex align-items-center justify-content-center mb-4">
-                        <div class="pagination d-flex align-items-center">
-                            {% if page_obj.has_previous %}
-                                <a class="btn btn-primary" href="?page=1">
-                                    <i class="fa-solid fa-angles-left"></i>
-                                </a>
-                                <a class="btn btn-primary" href="?page={{ page_obj.previous_page_number }}">
-                                    <i class="fa-solid fa-angle-left"></i>
-                                </a>
-                            {% endif %}
-
-                            <!-- Page Number Display -->
-                            <div class="form-control text-center mx-3 w-auto">
-                                <span>{{ page_obj.number }}</span> /
-                                <span>{{ page_obj.paginator.num_pages }}</span>
-                            </div>
-
-                            {% if page_obj.has_next %}
-                                <a class="btn btn-primary" href="?page={{ page_obj.next_page_number }}">
-                                    <i class="fa-solid fa-angle-right"></i>
-                                </a>
-                                <a class="btn btn-primary" href="?page={{ page_obj.paginator.num_pages }}">
-                                    <i class="fa-solid fa-angles-right"></i>
-                                </a>
-                            {% endif %}
-                        </div>
+                        <h1 class="h1 mb-0 text-gray-800">요약된 기사문</h1>
                     </div>
-                    <!--End of Page Selector-->
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+                        <h1 class="h5 mb-0 text-gray-800">키워드들간의 후처리 과정을 거친 요약 기사문</h1>
+                    </div>
 
-
+                    <!--후처리된 결과값을 보여준다 (미완).-->
+                    <h1 class="h4">{{result_content}}</h1>
 
                 </div>
                 <!--End Page content-->
             </div>
             <!-- End of Main Content -->
 
-            <!-- Footer 다시 요약문 관련 페이지로 넘어가는 버튼 -->
+            <!-- Footer 키워드 관련 뉴스 기사를 모아서 볼 수 있는 화면으로 넘어가는 페이지 -->
             <footer class="sticky-footer bg-white shadow">
-                <div class="container text-center my-auto mx-auto">
-                        <a class="btn btn-success" href="{% url 'main_sum' date=date keyword=keyword %}">
+                <div class="container text-center my-auto">
+                        <a class="btn btn-success" href="{% url 'main_img' date=date keyword=keyword%}?page=1">
                             <i class="fa-solid fa-image"> </i>
-                            <span> 요약 기사문 보기</span>
+                            <span> 키워드 관련 뉴스기사 보기</span>
                         </a>
                 </div>
             </footer>
