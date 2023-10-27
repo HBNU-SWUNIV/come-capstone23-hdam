@@ -8,10 +8,10 @@
 ## <u>HDAM</u> Project Background
 - ### 필요성
   - 금리 변동 및 인플레이션 발생으로 저축으로의 자금 축적보다는 여러 재테크 방법을 통해 저축보다는 투자를 선호하는 사람들의 증가하는 추세
-  - 현대 사회에서는 무수히 많은 정보들이 쏟아져 나오는데 이를 일일이 확인하고 정리하기엔 많은 시간이 소요되기 때문에 관심있는 내용만을 빠르고 간단하게 요약함의 필요성이 대두
+  - 현대 사회에서는 무수히 많은 정보들이 쏟아져 나오는데 이를 일일이 확인하고 정리하기엔 많은 시간이 소요되기 때문에 인기있는 내용만을 빠르고 간단하게 요약함의 필요성이 대두
 - ### 기존 해결책의 문제점
   - 하루에 일일이 자료를 찾아 요약하는 작업을 반복하기엔 번거로움
-  - 단일 키워드에 대한 요약은 쉽게 할 수 있지만 관심 있는 여러 키워드가 모두 포함된 내용의 뉴스기사만을 수집하여 요약하기에 어려움
+  - 단일 키워드에 대한 요약은 쉽게 할 수 있지만 인기 있는 여러 키워드가 모두 포함된 내용의 뉴스기사만을 수집하여 요약하기에 어려움
  
   
 ## System Design
@@ -24,9 +24,9 @@
   - ##### 배포 과정
     <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=Ubuntu&logoColor=white"><img src="https://img.shields.io/badge/NGINX-09639?style=for-the-badge&logo=NGINX&logoColor=white">
   ### ▶️ 시스템 구성도
-![시스템 구성도](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/1146fc63-aa67-403d-8a51-cb2b81966a29)
+  ![시스템 구성도](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/1146fc63-aa67-403d-8a51-cb2b81966a29)
   ### ▶️ Database
-    - 대충 데베 저장되어 있는 사진
+    - 추가 예정
 
   ### ▶️ 키워드 정보 제공
   -  고정 키워드, 일일 키워드, 복합 키워드의 정보를 제공
@@ -47,7 +47,6 @@
   -  선택한 키워드별 뉴스 기사들의 TF-IDF 수치를 기반으로 DBSCAN을 통해서 군집을 형성
   -  그중에 선택 키워드들이 모두 포함된 내용이 주된 내용인 군집을 뽑어내어줌 (전처리 과정)
 
-  
   ### ▶️ 요약문 제공
   -  군집화된 뉴스 기사들을 다중문서 요약 알고리즘 중 응답시간이 빠르며 성능이 정확도가 가장 높은 TextRank 알고리즘을 사용하여 요약
       
@@ -62,10 +61,10 @@
  - ### 모델 비교
    - TextRank와 DivRank는 비 인공지능 기반의 알고리즘이지만 인공지능 모델인 Kobart, T-5에 비해 응답 속도가 빠르고, 예상보다 정확도가 높아 사용하게 되었다. 다만 위 성능의 경우 단일 문서 요약을 측정하였기에 다중 문서 요약 정확도와 다를 수 있지만 상당한 상관관계가 있을것으로 예측한다.
   
-![모델 비교 그래프](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/9a7a4ace-f86e-44dd-9669-b2d4a6b4d85c)
+    ![모델 비교 그래프](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/9a7a4ace-f86e-44dd-9669-b2d4a6b4d85c)
 
  - ### 최종 결과
-![최종 요약 결과(크기 조절)](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/4161da63-2c90-40fd-b369-6bd0398c082a)
+    ![최종 요약 결과(크기 조절)](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/0c39252d-4aed-4750-a4c3-fe7d6e3c3ea0)
   
 ## Project Outcome
 - ### 20XX 년 OO학술대회 
