@@ -215,30 +215,47 @@ def main_summary(request, date, keyword):
 
     return render(request, 'Main/keyword_summary.html', context)
 
+
 def main_image(request, date, keyword):
     selected_keywords = keyword.split('&')  # 미국&중국을, 리스트 형태로 ["미국","중국"] 이런 형식으로 만들어주기
 
-    # DynamoDB에서 테이블 가져오기 위해 생성한 임시변수
-    if len(selected_keywords) >= 2:
-        temp_keywords_val = '&'.join(selected_keywords)  # "미국+중국" 형태로 만들어주기
-    else:
-        temp_keywords_val = selected_keywords
+    # DynamoDB에서 테이블 가져오기 위해 생성한 임시변수 temp_keywords_val
+    if len(selected_keywords) >= 2:  # 복합 키워드의 경우
+        temp_keywords_val = '&'.join(selected_keywords)  # "미국&중국" 형태로 만들어주기
 
-    # DynamoDB의 POSTPROECSSING 테이블 가져오기
-    table_preprocessing = dynamodb.Table('PREPROCESSING')
+        # DynamoDB의 PREPROCESSING 테이블 가져오기
+        table_preprocessing = dynamodb.Table('PREPROCESSING')
 
-    # POSTPROCESSING 테이블에서 후처리 결과물 가져오기
-    response_preprocessing = table_preprocessing.query(
-        KeyConditionExpression=Key('DATE').eq(date) &
-                               Key('KEYWORDS').begins_with(temp_keywords_val)
-    )
+        # PREPROCESSING 테이블에서 전처리 결과물 가져오기
+        response_preprocessing = table_preprocessing.query(
+            KeyConditionExpression=Key('DATE').eq(date) &
+                                   Key('KEYWORDS').begins_with(temp_keywords_val)
+        )
+        # 해당 요약문을 생성하게된, 전처리된 데이터
+        img_content = response_preprocessing['Items']
 
-    # 해당 요약문을 생성하게된, 전처리된 데이터
-    preprocessing_content = response_preprocessing['Items']
+    else:  # 단일 키워드의 경우 (전처리 과정 거치지 않음)
+        temp_keywords_val = selected_keywords[0]
+
+        # DynamoDB의 date 테이블 가져오기
+        table_crawling = dynamodb.Table(date)
+
+        # 날짜 테이블에서 크롤링 결과물 가져오기
+        response_crawling = table_crawling.query(
+            KeyConditionExpression=Key('KEYWORD').eq(temp_keywords_val)
+        )
+
+        # 해당 요약문을 생성하게된, 크롤링 데이터
+        img_content = response_crawling['Items']
+
+    # 관련기사가 존재하지 않을때, 에러 페이지로 이동하게 된다.
+    if len(img_content) == 0:
+        context = {'error_message': '선택하신 키워드 "' + temp_keywords_val + '" 에 대한 관련 기사가 존재하지 않습니다.'}
+        return render(request, 'Main/error.html', context)
 
     # Paginator로 한 페이지에 8(2x4)개만 나오게끔 구현
     # Pagination 공식 문서 : https://docs.djangoproject.com/en/3.2/topics/pagination/
-    paginator = Paginator(preprocessing_content, 8)  # 페이지당 10개의 항목을 보여주도록 설정합니다.
+    paginator = Paginator(img_content, 8)  # 페이지당 10개의 항목을 보여주도록 설정합니다.
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
