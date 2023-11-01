@@ -67,8 +67,9 @@
   
     ![모델 비교 그래프](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/9a7a4ace-f86e-44dd-9669-b2d4a6b4d85c)
 
+
  - ### 최종 결과
-    ![최종 요약 결과(크기 조절)](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/0c39252d-4aed-4750-a4c3-fe7d6e3c3ea0)
+    ![최종 요약](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/66865438/91054590-dba4-41d3-ad66-2c77c1feb95e)
   
 ## Project Outcome
 
