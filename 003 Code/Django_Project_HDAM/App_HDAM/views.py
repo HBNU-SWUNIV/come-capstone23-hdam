@@ -182,10 +182,10 @@ def main_summary(request, date, keyword):
     selected_keywords = keyword.split('&') # 미국&중국을, 리스트 형태로 ["미국","중국"] 이런 형식으로 만들어주기
 
     # DynamoDB에서 테이블 가져오기 위해 생성한 임시변수
-    if len(selected_keywords) >= 2:
-        temp_keywords_val = '&'.join(selected_keywords) # "미국+중국" 형태로 만들어주기
+    if len(selected_keywords) >= 2: # 복합 키워드의 경우, 단일 키워드의 경우 구분
+        temp_keywords_val = '&'.join(selected_keywords) # "미국&중국" 형태로 만들어주기
     else:
-        temp_keywords_val = selected_keywords
+        temp_keywords_val = selected_keywords[0] # ['금리']를 금리로 변환
 
     # DynamoDB의 POSTPROECSSING 테이블 가져오기
     table_postprocessing = dynamodb.Table('POSTPROCESSING')
@@ -196,15 +196,21 @@ def main_summary(request, date, keyword):
                                Key('KEYWORDS').eq(temp_keywords_val)
     )
 
-    # 최종 결과값
+    # 요약문이 존재하지 않을때, 에러 페이지로 이동하게 된다.
+    if len(response_postprocessing['Items']) == 0:
+        context = {'error_message': '선택하신 키워드 "' + temp_keywords_val + '" 에 대한 요약문이 존재하지 않습니다.'}
+        return render(request, 'Main/error.html', context)
+
+    # 최종 결과값 (문장과 문장을 ^^^로 구분되어 출력될 것이다.)
     result_postprocessing = response_postprocessing['Items'][0]['CONTENT']
+    result_content = result_postprocessing.split('^^^') # 문장들을 리스트로 변환
 
     # 웹 화면에 전달할 내용 시각적으로 제공
     context = {
         'date': date,  # Main Page에서 클릭한 날짜 정보
         'keyword' : keyword, # 선택한 키워드에 대한 정보
         'selected_keywords': selected_keywords, # 선택한 키워드를 띄우기 보기위한 정보
-        'result_content' : result_postprocessing, # 최종 결과값
+        'result_content' : result_content, # 최종 결과값
     }
 
     return render(request, 'Main/keyword_summary.html', context)

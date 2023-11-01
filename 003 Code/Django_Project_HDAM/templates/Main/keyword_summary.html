@@ -126,8 +126,16 @@
                         <h1 class="h5 mb-0 text-gray-800">키워드들간의 후처리 과정을 거친 요약 기사문</h1>
                     </div>
 
-                    <!--후처리된 결과값을 보여준다 (미완).-->
-                    <h1 class="h4">{{result_content}}</h1>
+                    <!--후처리된 결과값을 보여준다.-->
+                    <div class="card">
+                        <br>
+                        {% for sentence in result_content %}
+                            <br>
+                            <h1 class="h4"> {{ sentence }} </h1>
+                            <br>
+                        {% endfor %}
+                        <br>
+                    </div>
 
                 </div>
                 <!--End Page content-->
