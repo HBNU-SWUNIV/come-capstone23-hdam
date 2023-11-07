@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Article Page</title>
+    <title>Information Page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
      <!-- Custom fonts for this template-->
@@ -16,9 +16,12 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/fonts.css' %}">
     <!-- Custom styles for this template-->
     <link href="{%static 'css/main.css'%}" rel="stylesheet" />
-
+    <!--jQuery 최신버전-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 </head>
+<!--<i class="fa-solid fa-arrow-right"></i> 화살표 fontawsome-->
+<!--<i class="fa-solid fa-square"></i> 네모 fontawesome-->
 <body id="page-top">
 
     <!-- Page Wrapper -->
@@ -51,8 +54,8 @@
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
                 <a class="nav-link" href="#" style="pointer-events: none;">
-                    <span class="d-flex justify-content-center">Article Page</span>
-                    <span class="d-flex justify-content-center">요약문에 대한 관련 기사 페이지</span>
+                    <span class="d-flex justify-content-center">Information Page</span>
+                    <span class="d-flex justify-content-center">키워드 정보</span>
                 </a>
             </li>
 
@@ -77,13 +80,14 @@
                 <span>선택한 키워드</span>
             </div>
 
+            <!-- 내가 선택했던 키워드가 무엇인지 보여주는 PART-->
             {% for keyword in selected_keywords %}
-            <li class="nav-item active">
-                <a class="nav-link">
-                    <i class="fa-solid fa-arrow-right"></i>
-                    <span>{{ keyword }}</span>
-                </a>
-            </li>
+                <li class="nav-item active">
+                    <a class="nav-link">
+                        <i class="fa-solid fa-arrow-right"></i>
+                        <span>{{ keyword }}</span>
+                    </a>
+                </li>
             {% endfor %}
 
             <!-- Divider -->
@@ -99,7 +103,6 @@
             <!-- Main Content -->
             <div id="content">
 
-               <!-- TopNavbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow justify-content-center">
                     <div class="text-center ml-4 mt-2">
                         <a href="{% url 'main' %}" style="text-decoration: none; color: black;">
@@ -112,9 +115,34 @@
                 <!--Begin Page Content 네비게이션 아래 공간에 Conetents-->
                 <div class="container-fluid">
 
-                    <!-- Page Heading (NavBar와 똑같은 단어)-->
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800">선택한 키워드들에 대한 기사들</h1>
+                    <!--Page Heading-->
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+                        <h1 class="h1 mb-0 text-gray-800">요약된 기사문</h1>
+                    </div>
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+                        <h1 class="h5 mb-0 text-gray-800">키워드들간의 후처리 과정을 거친 요약 기사문을 보여줍니다.</h1>
+                    </div>
+
+                    <!--후처리된 결과값을 보여준다.-->
+                    <div class="card shadow pr-5 pl-5">
+                        <br>
+                        {% for sentence in result_content %}
+                            <br>
+                            <h1 class="h4">{{ sentence }} </h1>
+                            <br>
+                        {% endfor %}
+                        <br>
+                    </div>
+
+                    <!-- 요약문과 Page Heading 사이의 간격을 두기 위해 margin-top을 추가 -->
+                    <div class="mt-4"></div>
+
+                    <!--Page Heading-->
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+                        <h1 class="h1 mb-0 text-gray-800">키워드 관련 기사</h1>
+                    </div>
+                    <div class="d-sm-flex align-items-center justify-content-center mb-4">
+                        <h1 class="h5 mb-0 text-gray-800">선택하신 키워드와 관련된 있는 기사들 입니다.</h1>
                     </div>
 
                     <!--Begin of Big Card-->
@@ -194,22 +222,10 @@
                     <!--End of Page Selector-->
 
 
-
                 </div>
                 <!--End Page content-->
             </div>
             <!-- End of Main Content -->
-
-            <!-- Footer 다시 요약문 관련 페이지로 넘어가는 버튼 -->
-            <footer class="sticky-footer bg-white shadow">
-                <div class="container text-center my-auto mx-auto">
-                        <a class="btn btn-success" href="{% url 'main_sum' date=date keyword=keyword %}">
-                            <i class="fa-solid fa-image"> </i>
-                            <span> 요약 기사문 보기</span>
-                        </a>
-                </div>
-            </footer>
-            <!-- End of Footer -->
 
         </div>
         <!-- End of Content Wrapper -->
@@ -218,3 +234,34 @@
 
 </body>
 </html>
+<!-- 스크립트 작성 (빠르게 아래로) -->
+<script>
+$(document).ready(function() {
+    // 페이지네이션 버튼 클릭 시 플래그 설정
+    $(".btn.btn-primary").click(function() {
+        localStorage.setItem('paginationClicked', 'true');
+    });
+
+    // 페이지 로드 시 플래그 확인
+    if (localStorage.getItem('paginationClicked') === 'true') {
+        $("html, body").animate({ scrollTop: $(document).height() }, 0);  // 속도를 0으로 설정
+        localStorage.removeItem('paginationClicked');  // 플래그 초기화
+    }
+});
+</script>
+
+<!-- 스크립트 작성 (느리게 아래로)-->
+<!--<script>-->
+<!--$(document).ready(function() {-->
+<!--    // 페이지네이션 버튼 클릭 시 플래그 설정-->
+<!--    $(".btn.btn-primary").click(function() {-->
+<!--        localStorage.setItem('paginationClicked', 'true');-->
+<!--    });-->
+
+<!--    // 페이지 로드 시 플래그 확인-->
+<!--    if (localStorage.getItem('paginationClicked') === 'true') {-->
+<!--        $("html, body").animate({ scrollTop: $(document).height() }, "slow");-->
+<!--        localStorage.removeItem('paginationClicked');  // 플래그 초기화-->
+<!--    }-->
+<!--});-->
+<!--</script>-->

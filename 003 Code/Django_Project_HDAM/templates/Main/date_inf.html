@@ -144,8 +144,8 @@
 
                         <div class="btn-group mb-4">
                             {% for keyword in fix_keyword %}
-                                 <!-- 요약 페이지로 이동하는 버튼 -->
-                                <a href="{% url 'main_sum' date=date keyword=keyword.VALUE %}">
+                                 <!-- 키워드 정보로 이동하는 버튼 -->
+                                <a href="{% url 'main_inf' date=date keyword=keyword.VALUE %}">
                                   <button class="btn btn-info mr-2" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
                                 </a>
                             {% endfor %}
@@ -158,8 +158,8 @@
 
                         <div class="btn-group mb-4">
                             {% for keyword in day_keyword %}
-                                <!-- 요약 페이지로 이동하는 버튼 -->
-                                <a href="{% url 'main_sum' date=date keyword=keyword.VALUE %}">
+                                <!-- 키워드 정보로 이동하는 버튼 -->
+                                <a href="{% url 'main_inf' date=date keyword=keyword.VALUE %}">
                                   <button class="btn btn-info mr-2" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
                                 </a>
                             {% endfor %}
@@ -170,10 +170,10 @@
                             <h1 class="h3 mb-0 text-gray-800">복합 키워드</h1>
                         </div>
 
-                        <div class="btn-group mb-4">
+                        <div class="btn-group mb-4 ">
                             {% for keyword in mix_keyword %}
-                                <!-- 요약 페이지로 이동하는 버튼 -->
-                                <a href="{% url 'main_sum' date=date keyword=keyword.VALUE %}">
+                                <!-- 키워드 정보로 이동하는 버튼 -->
+                                <a href="{% url 'main_inf' date=date keyword=keyword.VALUE %}">
                                   <button class="btn btn-info mr-2" type="submit" name="keyword" value ="{{keyword.VALUE}}">{{keyword.VALUE}}</button>
                                 </a>
                             {% endfor %}

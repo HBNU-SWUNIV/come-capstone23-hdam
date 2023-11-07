@@ -16,8 +16,8 @@ matplotlib.use('Agg')  # 백엔드를 'Agg'로 설정하여 GUI를 사용하지 
 import matplotlib.figure as fig
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-# =============================================================================================
-# DynamoDB 연동하는 부분 (AWS와 ACCESS하기 위한 정보들은 프로젝트 로컬 디렉토리에 .env로 저장)
+# ============================================================================================
+# DynamoDB 연동 (EC2에 IAM 역할 추가로)
 def connect_dynamodb():
     dynamodb = boto3.resource('dynamodb', region_name='ap-northeast-2')
     return dynamodb
@@ -51,6 +51,8 @@ def get_Date():
         # day_of_week = date_inf.strftime('%A')
         # date += day_of_week_KR[day_of_week]
         day_list.append(date)
+
+    day_list.append('2023-10-23')
 
     return day_list
 # =============================================================================================
@@ -114,12 +116,12 @@ def date_view(request, date):
         KeyConditionExpression=Key('DATE').eq(date) &
                                Key('TYPE_ID').begins_with('FIX')  # 고정 키워드 인 것
     )
+
     # 어제 일일 키워드 가져오기
     response_day = table_keyword.query(
         KeyConditionExpression=Key('DATE').eq(date) &
                                Key('TYPE_ID').begins_with('DAY')  # 일일 키워드 인 것
     )
-
     # 복합 키워드 가져오기
     response_mix = table_keyword.query(
         KeyConditionExpression=Key('DATE').eq(date) &
@@ -149,7 +151,7 @@ def date_view(request, date):
     if len(wordcloud_dict) > 0:
         generate_wordcloud(wordcloud_dict, date)
     else:
-        print("No keywords to generate a word cloud.")
+        print("워드 클라우드 미생성")
 
     # 워드 클라우드 파일의 위치를 넘겨주기 위해 주소 가져오기
     wordcloud_image_url = f"/media/wordcloud/{date}.png"
@@ -177,16 +179,17 @@ def date_view(request, date):
 
     return render(request, 'Main/date_inf.html', context)
 
-# checkbox의 항목을 받아. DynamoDB의 일자에서 해당하는 키워드에 대한 정보를 받아오고, 해당 기사를
-def main_summary(request, date, keyword):
+# 키워드에 대한 요약문과, 그 요약문에 관련된 기사를 보여주는 페이지
+def main_information(request, date, keyword):
     selected_keywords = keyword.split('&') # 미국&중국을, 리스트 형태로 ["미국","중국"] 이런 형식으로 만들어주기
 
     # DynamoDB에서 테이블 가져오기 위해 생성한 임시변수
-    if len(selected_keywords) >= 2: # 복합 키워드의 경우, 단일 키워드의 경우 구분
-        temp_keywords_val = '&'.join(selected_keywords) # "미국&중국" 형태로 만들어주기
+    if len(selected_keywords) >= 2:  # 복합 키워드의 경우, 단일 키워드의 경우 구분
+        temp_keywords_val = '&'.join(selected_keywords)  # "미국&중국" 형태로 만들어주기
     else:
-        temp_keywords_val = selected_keywords[0] # ['금리']를 금리로 변환
+        temp_keywords_val = selected_keywords[0]  # ['금리']를 금리로 변환
 
+    # 요약문 관련 부분 정보 가져오기
     # DynamoDB의 POSTPROECSSING 테이블 가져오기
     table_postprocessing = dynamodb.Table('POSTPROCESSING')
 
@@ -196,33 +199,8 @@ def main_summary(request, date, keyword):
                                Key('KEYWORDS').eq(temp_keywords_val)
     )
 
-    # 요약문이 존재하지 않을때, 에러 페이지로 이동하게 된다.
-    if len(response_postprocessing['Items']) == 0:
-        context = {'error_message': '선택하신 키워드 "' + temp_keywords_val + '" 에 대한 요약문이 존재하지 않습니다.'}
-        return render(request, 'Main/error.html', context)
-
-    # 최종 결과값 (문장과 문장을 ^^^로 구분되어 출력될 것이다.)
-    result_postprocessing = response_postprocessing['Items'][0]['CONTENT']
-    result_content = result_postprocessing.split('^^^') # 문장들을 리스트로 변환
-
-    # 웹 화면에 전달할 내용 시각적으로 제공
-    context = {
-        'date': date,  # Main Page에서 클릭한 날짜 정보
-        'keyword' : keyword, # 선택한 키워드에 대한 정보
-        'selected_keywords': selected_keywords, # 선택한 키워드를 띄우기 보기위한 정보
-        'result_content' : result_content, # 최종 결과값
-    }
-
-    return render(request, 'Main/keyword_summary.html', context)
-
-
-def main_image(request, date, keyword):
-    selected_keywords = keyword.split('&')  # 미국&중국을, 리스트 형태로 ["미국","중국"] 이런 형식으로 만들어주기
-
-    # DynamoDB에서 테이블 가져오기 위해 생성한 임시변수 temp_keywords_val
+    # 키워드 관련 기사 부분 정보 가져오기
     if len(selected_keywords) >= 2:  # 복합 키워드의 경우
-        temp_keywords_val = '&'.join(selected_keywords)  # "미국&중국" 형태로 만들어주기
-
         # DynamoDB의 PREPROCESSING 테이블 가져오기
         table_preprocessing = dynamodb.Table('PREPROCESSING')
 
@@ -235,7 +213,6 @@ def main_image(request, date, keyword):
         img_content = response_preprocessing['Items']
 
     else:  # 단일 키워드의 경우 (전처리 과정 거치지 않음)
-        temp_keywords_val = selected_keywords[0]
 
         # DynamoDB의 date 테이블 가져오기
         table_crawling = dynamodb.Table(date)
@@ -248,10 +225,22 @@ def main_image(request, date, keyword):
         # 해당 요약문을 생성하게된, 크롤링 데이터
         img_content = response_crawling['Items']
 
+    # 해당하는 키워드에 대한 정보가 존재하지 않을때, 에러 페이지로 이동하게 된다.
+    # 어느 부분이 비어있는지 확인 위해 if 문 3개로 분류
+    if len(response_postprocessing['Items']) == 0 and len(img_content) == 0:
+        context = {'error_message': '선택하신 키워드 "' + temp_keywords_val + '" 에 대한 정보가 존재하지 않습니다.'}
+        return render(request, 'Main/error.html', context)
     # 관련기사가 존재하지 않을때, 에러 페이지로 이동하게 된다.
-    if len(img_content) == 0:
+    elif len(img_content) == 0:
         context = {'error_message': '선택하신 키워드 "' + temp_keywords_val + '" 에 대한 관련 기사가 존재하지 않습니다.'}
         return render(request, 'Main/error.html', context)
+    elif len(response_postprocessing['Items']) == 0:
+        context = {'error_message': '선택하신 키워드 "' + temp_keywords_val + '" 에 대한 요약문이 존재하지 않습니다.'}
+        return render(request, 'Main/error.html', context)
+
+    # 최종 요약문 결과값 (문장과 문장을 ^^^로 구분되어 출력될 것이다.)
+    result_postprocessing = response_postprocessing['Items'][0]['CONTENT']
+    result_content = result_postprocessing.split('^^^') # 문장들을 리스트로 변환
 
     # Paginator로 한 페이지에 8(2x4)개만 나오게끔 구현
     # Pagination 공식 문서 : https://docs.djangoproject.com/en/3.2/topics/pagination/
@@ -261,13 +250,14 @@ def main_image(request, date, keyword):
 
     # 웹 화면에 전달할 내용 시각적으로 제공
     context = {
-        'keyword': keyword,  # 선택한 키워드에 대한 정보
-        'selected_keywords': selected_keywords,  # 선택한 키워드를 띄우기 보기위한 정보
         'date': date,  # Main Page에서 클릭한 날짜 정보
-        'page_obj': page_obj,  # 페이지 정보
+        'keyword' : keyword, # 선택한 키워드에 대한 정보
+        'selected_keywords': selected_keywords, # 선택한 키워드를 띄우기 보기위한 정보
+        'result_content' : result_content, # 요약문 결과값
+        'page_obj': page_obj,  # 페이지 정보 (관련기사)
     }
 
-    return render(request, 'Main/keyword_img.html', context)
+    return render(request, 'Main/keyword_inf.html', context)
 
 def main_error(request):
     return render(request, 'Main/error.html')
