@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 # TO USE DYNAMODB
 import boto3
 from boto3.dynamodb.conditions import Key
+from botocore.exceptions import ClientError
 
 # TO USE WORDCLOUD, HISTOGRAM
 from wordcloud import WordCloud
@@ -270,7 +271,15 @@ def main_information(request, date, keyword):
     else:  # 단일 키워드의 경우 (전처리 과정 거치지 않음)
 
         # DynamoDB의 date 테이블 가져오기
-        table_crawling = dynamodb.Table(date)
+        try:
+            table_crawling = dynamodb.Table(date)
+            table_crawling.load()  # date 테이블이 존재하는지 확인
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'ResourceNotFoundException':
+                context = {'error_message': '선택하신 키워드 "' + temp_keywords_val + '" 에 대한 정보가 존재하지 않습니다.'}
+                return render(request, 'Main/error.html', context)
+            else:
+                raise  # 그 외 오류는 그대로 던져줌
 
         # 날짜 테이블에서 크롤링 결과물 가져오기
         response_crawling = table_crawling.query(
