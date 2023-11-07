@@ -132,7 +132,12 @@
                                         <div class="card border-bottom-secondary shadow h-100 py-2">
                                             <!--Begin of Small Card Body-->
                                             <div class="card-body">
-                                                <img src="{{item.THUMBNAIL}}" alt="image" class="img-fluid" />
+                                                <!--썸네일 미존재시 예외 처리 -->
+                                                {% if item.THUMBNAIL == 'a' %}
+                                                    <img src="{% static 'assets/img/replace_thumbnail.jpg' %}" alt="image" class="img-fluid" />
+                                                {% else %}
+                                                    <img src="{{item.THUMBNAIL}}" alt="image" class="img-fluid" />
+                                                {% endif %}
                                                 <p>
                                                     <a
                                                         class="text-center"
