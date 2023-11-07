@@ -52,8 +52,6 @@ def get_Date():
         # date += day_of_week_KR[day_of_week]
         day_list.append(date)
 
-    day_list.append('2023-10-23')
-
     return day_list
 # =============================================================================================
 # WordCloud Generator
