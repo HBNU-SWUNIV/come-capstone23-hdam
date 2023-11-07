@@ -9,12 +9,15 @@ from datetime import datetime, timedelta
 import boto3
 from boto3.dynamodb.conditions import Key
 
-# TO USE WORDCLOUD
+# TO USE WORDCLOUD, HISTOGRAM
 from wordcloud import WordCloud
 import matplotlib
 matplotlib.use('Agg')  # 백엔드를 'Agg'로 설정하여 GUI를 사용하지 않도록 함
 import matplotlib.figure as fig
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 
 # ============================================================================================
 # DynamoDB 연동 (EC2에 IAM 역할 추가로)
@@ -52,6 +55,8 @@ def get_Date():
         # date += day_of_week_KR[day_of_week]
         day_list.append(date)
 
+    day_list.append('2023-10-23')
+
     return day_list
 # =============================================================================================
 # WordCloud Generator
@@ -64,14 +69,14 @@ def generate_wordcloud(data, date):
     if os.path.exists(wordcloud_save_path):
         return wordcloud_save_path
 
-    figure = fig.Figure(figsize=(8, 4))  # Figure를 직접 생성
+    figure = fig.Figure(figsize=(24, 8))  # Figure를 직접 생성
     canvas = FigureCanvas(figure)  # FigureCanvas 객체 생성
     ax = figure.add_subplot(111)  # Axes 객체 추가
 
     # 워드클라우드 생성 및 그림 그리기
     font_path = 'static/fonts/NanumSquareNeo-cBd.ttf'
-    wordcloud = WordCloud(width=1000,
-                          height=1000,
+    wordcloud = WordCloud(width=800,
+                          height=1600,
                           background_color='white',
                           font_path=font_path,
                           max_words=20,
@@ -83,6 +88,48 @@ def generate_wordcloud(data, date):
     canvas.print_png(wordcloud_save_path)
 
     return wordcloud_save_path
+
+# 정보에 대한 막대그래프 제작
+def generate_bargraph(data, date):
+    # 데이터는 {'중국':30, '미국':20} 이러한 형식
+
+    bargraph_name = str(date) + '.png'
+    bargraph_save_path = 'media/bargraph/' + str(bargraph_name)
+
+    # 이미지 파일이 이미 존재하는지 확인. 존재할 시 히스토그램을 생성하지 않음
+    if os.path.exists(bargraph_save_path):
+        return bargraph_save_path
+
+    # 데이터를 값에 따라 오름차순 정렬
+    sorted_data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1])}
+
+    # x, y로 데이터 분리
+    x = list(sorted_data.keys())
+    y = list(sorted_data.values())
+
+    # 폰트 경로 설정
+    font_path = 'static/fonts/NanumSquareNeo-cBd.ttf'
+
+    # 폰트 프로퍼티 가져오기
+    font_prop = fm.FontProperties(fname=font_path, size=20)
+
+    # 그래프 크기 설정
+    plt.figure(figsize=(28, 16))
+
+    # 막대그래프 그리기
+    plt.bar(x, y)
+
+    # 축 이름 설정
+    plt.xlabel('키워드', fontproperties=font_prop)
+
+    # x축, y축 눈금값 설정
+    plt.xticks(rotation=65, fontproperties=font_prop)
+    plt.yticks(fontproperties=font_prop)
+
+    # 그래프 저장하기
+    plt.savefig(bargraph_save_path)
+
+    return bargraph_save_path
 
 # =============================================================================================
 # 웹 사이트 이동과 관련되어 있는 함수들
@@ -145,14 +192,25 @@ def date_view(request, date):
         if keyword_name is not None and keyword_count is not None:
             wordcloud_dict[keyword_name] = int(keyword_count)
 
-    # 워드 클라우드를 생성해주는 함수 호출. Parameter = date, wordcloud_dict
+    # 워드 클라우드를 생성해주는 함수 호출
+    # Parameter = date, wordcloud_dict
     if len(wordcloud_dict) > 0:
         generate_wordcloud(wordcloud_dict, date)
     else:
         print("워드 클라우드 미생성")
 
+    # 히스토그램을 생성해주는 함수 호출.
+    # Parameter = date, wordcloud_dict
+    if len(wordcloud_dict) > 0:
+        generate_bargraph(wordcloud_dict, date)
+    else:
+        print("히스토그램 미생성")
+
     # 워드 클라우드 파일의 위치를 넘겨주기 위해 주소 가져오기
     wordcloud_image_url = f"/media/wordcloud/{date}.png"
+
+    # 막대 그래프 파일의 위치를 넘겨주기 위해 주소 가져오기
+    bargraph_image_url = f"/media/bargraph/{date}.png"
 
     # 변수를 담아 전송
     selected_context= {'date': date} # Select한 날짜의 정보
@@ -171,6 +229,7 @@ def date_view(request, date):
         'day_keyword': response_day['Items'],
         'mix_keyword' : response_mix['Items'],
         'wordcloud_image_url': wordcloud_image_url,
+        'bargraph_image_url': bargraph_image_url,
         'wordcloud_dict': wordcloud_dict,
         'date' : date # Main Page에서 클릭한 날짜 정보
     }

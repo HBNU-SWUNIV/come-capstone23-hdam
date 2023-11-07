@@ -195,35 +195,31 @@
 
                     <!--Start Keyword analysis row-->
                     <div class="row">
-                      <!--WordCloud Card-->
-                      <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 d-flex flex-column">
-                        <div class="card shadow mb-4 flex-grow-1">
-                          <!-- Card Header -->
-                          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-info">Word Cloud</h6>
+                       <!--WordCloud Card-->
+                          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 d-flex flex-column">
+                            <div class="card shadow mb-4 flex-grow-1">
+                              <!-- Card Header -->
+                              <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-info">WordCloud</h6>
+                              </div>
+                              <!-- Card Body -->
+                              <div class="card-body p-0 d-flex align-items-center justify-content-center">
+                                <img src="{{ wordcloud_image_url }}" alt="Word Cloud" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;">
+                              </div>
+                            </div>
                           </div>
-                          <!-- Card Body -->
-                          <div class="card-body text-center">
-                            <img src="{{ wordcloud_image_url }}" alt="Word Cloud" class="img-fluid">
-                          </div>
-                        </div>
-                      </div>
-                      <!--End WordCloud Card-->
+                          <!--End WordCloud Card-->
 
                       <!-- Keyword Analysis Card -->
-                      <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 d-flex flex-column">
+                      <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12 d-flex flex-column">
                         <div class="card shadow mb-4 flex-grow-1">
                           <!-- Card Header -->
                           <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-info">Keyword Analysis</h6>
+                            <h6 class="m-0 font-weight-bold text-info">Bar Graph</h6>
                           </div>
                           <!-- Card Body -->
                           <div class="card-body">
-                              <ul>
-                                {% for word, count in wordcloud_dict.items %}
-                                <li>{{ word }}: {{ count }}</li>
-                                {% endfor %}
-                              </ul>
+                                <img src="{{ bargraph_image_url }}" alt="Bar Graph" class="img-fluid">
                           </div>
                         </div>
                       </div>
