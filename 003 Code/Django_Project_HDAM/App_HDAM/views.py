@@ -99,8 +99,8 @@ def generate_bargraph(data, date):
     if os.path.exists(bargraph_save_path):
         return bargraph_save_path
 
-    # 데이터를 값에 따라 오름차순 정렬
-    sorted_data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1])}
+    # 데이터를 값에 따라 내림차순 정렬
+    sorted_data = {k: v for k, v in sorted(data.items(), key=lambda item: item[1], reverse=True)}
 
     # x, y로 데이터 분리
     x = list(sorted_data.keys())
