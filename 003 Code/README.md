@@ -13,4 +13,3 @@
 - Font Awesome https://fontawesome.com/
 - Start Bootstrap - SB Admin 2 https://startbootstrap.com/theme/sb-admin-2
 - 나눔스퀘어 네오 폰트 https://hangeul.naver.com/font
-- 통계청 경제 인기 키워드 https://data.kostat.go.kr/social/keyword/index.do
