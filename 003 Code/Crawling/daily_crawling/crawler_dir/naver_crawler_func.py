@@ -23,11 +23,12 @@ from boto3.dynamodb.conditions import Key, Attr  # 테이블 읽기기
 # sleep_sec은 0.2초로 설정
 sleep_sec = 0.2
 
-pressList1 = ["머니투데이", "데일리안", "헤럴드경제", "이데일리", "YTN", "서울경제", "뉴스1", "경향신문", "파이낸셜뉴스", "머니S"]
-pressList2 = ['매일경제', '뉴시스', '연합뉴스', '한국경제', 'KBS', '중앙일보', '조선일보', '국민일보', '아시아경제', '조선비즈']
+pressList1 = ["머니투데이", "데일리안", "헤럴드경제", "이데일리", "YTN"]
 
 
 def crawling_func(keyword, newsCount, pressList):
+    end_this_keyword_crawling = 0  # 경제 관련 뉴스가 수집 뉴스 수 보다 많을 때 해당 키워드는 넘어가기
+
     ###
     chrome_options = Options()
     chrome_options.add_argument('--headless')
@@ -58,7 +59,7 @@ def crawling_func(keyword, newsCount, pressList):
     # 크롤링 시작
     news_url = 'https://search.naver.com/search.naver?where=news&query={}'.format(keyword)
     driver.get(news_url)
-    time.sleep(sleep_sec)
+    # time.sleep(sleep_sec)
 
     #### 옵션 클릭
     search_opn_btn = driver.find_element(By.XPATH, '//a[@class="btn_option _search_option_open_btn"]')
@@ -69,15 +70,16 @@ def crawling_func(keyword, newsCount, pressList):
     bx_term = driver.find_element(By.XPATH,
                                   '//div[@role="listbox" and @class="mod_group_option_sort _search_option_detail_wrap"]//li[@class="bx term"]')
 
-    # 1일까지
+    ### 1일까지
     term_tablist = bx_term.find_elements(By.XPATH, './/div[@role="tablist" and @class="option"]/a')
 
-    driver.implicitly_wait(20)  # 유독 여기에서 오류가 남
+    driver.implicitly_wait(10)  # 유독 여기에서 오류가 남
 
     term_tablist[3].click()
     time.sleep(sleep_sec)
+    ###
 
-    #### 정렬
+    ### 정렬
     bx_lineup = driver.find_element(By.XPATH,
                                     '//div[@role="listbox" and @class="mod_group_option_sort _search_option_detail_wrap"]//li[@class="bx lineup"]')
 
@@ -85,9 +87,20 @@ def crawling_func(keyword, newsCount, pressList):
     lineup_tablist = bx_lineup.find_elements(By.XPATH, './/div[@role="tablist" and @class="option"]/a')
     lineup_tablist[1].click()
     time.sleep(sleep_sec)
+    ###
 
     #### 언론사별 크롤링 시작
     for press in pressList1:  # 전체 진행수
+        needless_keyword = 0  # 경제와 관련 없는 키워드면 그냥 다음으로 넘어가기기
+
+        if end_this_keyword_crawling == 3:
+            driver.close()
+            time.sleep(4)
+
+            print("경제 관련 키워드가 아닙니다.")
+            news_dict = {0: {'title': 'not economy'}}
+
+            return news_dict
         # ---------------------------------------------------------------------------------------------------- #
 
         no_exist = 0  # 검색결과가 없는 경우
@@ -114,7 +127,7 @@ def crawling_func(keyword, newsCount, pressList):
         # 언론사 종류
         press_kind_btn_list = press_kind_bx.find_elements(By.XPATH,
                                                           './/ul[@role="tablist" and @class="lst_item _ul"]/li/a')
-        time.sleep(sleep_sec)
+        # time.sleep(sleep_sec)
 
         # -----언론사의 XPATH를 찾는 반복문-----
         for press_kind_btn in press_kind_btn_list:
@@ -180,6 +193,7 @@ def crawling_func(keyword, newsCount, pressList):
                 n_url = n.get_attribute('href')
 
                 isValid, soup = ivaf.is_valid_article(n_url)
+
                 if isValid == True:
                     title, content, thumbnail = cmtf.crawling_main_text(soup, press)
 
@@ -201,6 +215,7 @@ def crawling_func(keyword, newsCount, pressList):
                 elif isValid == False:
                     idx += 1
                     newsCount += 1
+                    needless_keyword += 1
                     continue
 
             # 아직 탐색을 끝마치지 못했을때,
@@ -218,6 +233,11 @@ def crawling_func(keyword, newsCount, pressList):
 
                 driver.get(next_page_url)
                 time.sleep(sleep_sec)
+
+            elif needless_keyword > newsCount:
+                end_this_keyword_crawling += 1
+                break
+
             else:
 
                 print('\n기사 수집을 완료하였습니다. \n')
@@ -245,7 +265,7 @@ def crawling_func(keyword, newsCount, pressList):
         newsCount = org_news_num
 
     driver.close()
-    time.sleep(5)
+    time.sleep(2)
 
     return news_dict
 
@@ -264,43 +284,25 @@ def naver_crawler():
 
     # 고정키워드 가져오기
     response_fix = table_keyword.query(
-        KeyConditionExpression=Key('DATE').eq(date) & Key('TYPE_ID').begins_with('FIX')
+        KeyConditionExpression=Key('DATE').eq(date)
     )
-    item_fix = response_fix['Items']
+    item_keyword = response_fix['Items']
 
-    # 일일키워드 가져오기
-    response_day = table_keyword.query(
-        KeyConditionExpression=Key('DATE').eq(date) & Key('TYPE_ID').begins_with('DAY')
-    )
-    item_day = response_day['Items']
-
-    keywords_fix = []
-    keywords_day = []
+    keywords_DB = []
 
     # 가져온 키워드들 리스트로 저장
-    for fix, day in zip(item_fix, item_day):
-        keywords_fix.append(fix['VALUE'])
-        keywords_day.append(day['VALUE'])
-
-    keywords = keywords_fix + keywords_day
+    for item in item_keyword:
+        if "MIX" in item['TYPE_ID']:
+            continue
+        else:
+            keywords_DB.append(item['VALUE'])
     ###
 
-    newsCount = 20  # 언론사별 뉴스크롤링 갯수
+    newsCount = 30  # 언론사별 뉴스크롤링 갯수
 
-    print('\n' + '=' * 25 + "START CRAWLING" + '=' * 25 + '\n')
+    ### 크롤링 시작
 
-    # with ThreadPoolExecutor(max_workers=8) as executor:
-    #     #crl_dict = crawling_func(keyword, newsCount, pressList2)
-    #     crl_dict = [executor.submit(crawling_func, keyword, newsCount, pressList1) for keyword in keywords]
-
-    # for future in as_completed(crl_dict):
-    # #for i in crl_dict.values():
-    #     result = future.result()
-    #     for i in result.values():
-    #         news_dict[dict_idx] = i
-    #         dict_idx += 1
-
-    ### 크롤링 시작작
+    # 현재 시간 한국 기준으로 변경
     now = datetime.now()
 
     if now.hour + 9 > 24:
@@ -309,172 +311,296 @@ def naver_crawler():
         nowhour = now.hour + 9
 
     # 딕셔너리 형식으로 뉴스 저장
-    news_dict = {}
-    dict_idx = 0  # 뉴스갯수
-
-    # 키워드 크롤링
-    # if nowhour == 18 and now.minute < 16:
-    with ThreadPoolExecutor(max_workers=8) as executor:
-        # crl_dict = crawling_func(keyword, newsCount, pressList2)
-        crl_dict = [executor.submit(crawling_func, keyword, newsCount, pressList1) for keyword in keywords[0:4]]
-
-    for future in as_completed(crl_dict):
-        result = future.result()
-        for i in result.values():
-            news_dict[dict_idx] = i
-            dict_idx += 1
-    ###
-
-    # 최종적으로 복합키워드를 가져와주는 리스트 (ex. {[금리,대출]:30, [금리,대출,아파트]:10, [부동산,아파트]:51} 이런 형태)
-    mixed_keyword_list = {("dumy", "yeah"): 0}
-
-    for key, value in news_dict.items():
-        temp_list = list()
-        content = value['content']
-        for total_keyword in keywords:
-            if total_keyword in content:
-                temp_list.append(total_keyword)
-                # 가져온 고정,일일 키워드 중, 기사 본문에 2개 이상 나왔을 시,
-                if len(temp_list) >= 2:
-                    temp_tuple = tuple(temp_list)
-                    if temp_tuple in mixed_keyword_list.key():  # 이미 존재할 시,
-                        mixed_keyword_list[temp_tuple] += 1
-                    else:  # 존재하지 않을 시,
-                        mixed_keyword_list[temp_tuple] = 1
-
-    # 많이나온 상위 5개를 이러한 형태로 출력
-    # 최종적으로 DynamoDB로 옮겨져야하는 변수는 mixed_keyword
-    # 딕셔너리를 값(value)을 기준으로 내림차순으로 정렬합니다.
-    sorted_data = sorted(mixed_keyword_list.items(), key=lambda x: x[1], reverse=True)
-
-    # 상위 5개의 항목을 추출하고, 각 항목을 리스트로 변환합니다.
-    # [['금리', '대출'], ['추석', '연휴'], ['미국', '중국'], ['금리', '미국'], ['서울', '한국']] 이러한 형태를 띈다.
-    mixed_keyword = [list(key) for key, value in sorted_data[:5]]
-
-    print(mixed_keyword)
+    news_dict_db = {}
+    dict_idx_db = 0  # 뉴스갯수
 
     # 테이블 생성
-    table = dynamodb.create_table(
-        TableName=date,
-        KeySchema=[
-            {
-                'AttributeName': 'keyword',
-                'KeyType': 'HASH'
-            },
+    dynamodb = boto3.resource('dynamodb')
 
-            {
-                "AttributeName": "id",
-                "KeyType": "RANGE"
-            }
-        ],
-        AttributeDefinitions=[
-            {
-                'AttributeName': 'keyword',
-                'AttributeType': 'S'
-            },
+    nowhour_cust = 22  # 22시(10시)
+    nowmin_cust = 7  # 7분
 
-            {
-                "AttributeName": "id",
-                "AttributeType": "S"
-            }
-        ],
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 5,
-            'WriteCapacityUnits': 5
-        }
-    )
+    if nowhour == nowhour_cust and now.minute < nowmin_cust:
+        table = dynamodb.create_table(
+            TableName=date,
+            KeySchema=[
+                {
+                    'AttributeName': 'KEYWORD',
+                    'KeyType': 'HASH'
+                },
 
-    # 테이블 생성될 때때까지 대기
-    table.meta.client.get_waiter('table_exists').wait(TableName=date)
-
-    # 테이블에 저장
-    ID = 0
-    table = dynamodb.Table(date)
-    with table.batch_writer() as batch:
-        for i in news_dict.values():
-            batch.put_item(
-                Item={
-                    'keyword': i['keyword'],
-                    'id': str(ID),
-                    'content': i['content'],
-                    'thumbnail': i['thumbnail'],
-                    'title': i['title'],
-                    'url': i['url']
+                {
+                    "AttributeName": "ID",
+                    "KeyType": "RANGE"
                 }
-            )
-            ID += 1
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'KEYWORD',
+                    'AttributeType': 'S'
+                },
 
-    # elif nowhour == 18 and now.minute < 22:
-    #     with ThreadPoolExecutor(max_workers=8) as executor:
-    #         #crl_dict = crawling_func(keyword, newsCount, pressList2)
-    #         crl_dict = [executor.submit(crawling_func, keyword, newsCount, pressList1) for keyword in keywords[2:4]]
+                {
+                    "AttributeName": "ID",
+                    "AttributeType": "S"
+                }
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 7,
+                'WriteCapacityUnits': 7
+            }
+        )
 
-    #     for future in as_completed(crl_dict):
-    #     #for i in crl_dict.values():
-    #         result = future.result()
-    #         for i in result.values():
-    #             news_dict[dict_idx] = i
-    #             dict_idx += 1
+        # 테이블 생성될 때때까지 대기
+        table.meta.client.get_waiter('table_exists').wait(TableName=date)
 
-    #     # 테이블에 저장
-    #     ID = 0
-    #     table = dynamodb.Table(date)
-    #     with table.batch_writer() as batch:
-    #         for i in news_dict.values():
-    #             batch.put_item(
-    #                 Item={
-    #                     'keyword': i['keyword'],
-    #                     'id': str(ID),
-    #                     'content': i['content'],
-    #                     'thumbnail': i['thumbnail'],
-    #                     'title': i['title'],
-    #                     'url': i['url']
-    #                 }
-    #             )
-    #             ID += 1
+    # 키워드 크롤링 #
+    if nowhour == nowhour_cust and now.minute < nowmin_cust:
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            # crl_dict = crawling_func(keyword, newsCount, pressList2)
+            crl_dict = [executor.submit(crawling_func, keyword, newsCount, pressList1) for keyword in keywords_DB[0:3]]
 
-    # elif nowhour == 22 and now.minute < 48:
-    #     for keyword in keywords:
-    #         crl_dict = crawling_func(keyword, newsCount, pressList3)
-    #         for i in crl_dict.values():
-    #             news_dict[dict_idx] = i
-    #             dict_idx += 1
+        for future in as_completed(crl_dict):
+            result = future.result()
 
-    #     # 테이블에 저장
-    #     ID = 0
-    #     table = dynamodb.Table(date)
-    #     with table.batch_writer() as batch:
-    #         for i in news_dict.values():
-    #             batch.put_item(
-    #                 Item={
-    #                     'keyword': i['keyword'],
-    #                     'ID': str(ID),
-    #                     'content': i['content'],
-    #                     'title': i['title'],
-    #                     'url': i['url']
-    #                 }
-    #             )
-    #             ID += 1
+            for i in result.values():
+                if i == 'not economy':
+                    break
 
-    # elif nowhour == 23 and now.minute < 4:
-    #     for keyword in keywords:
-    #         crl_dict = crawling_func(keyword, newsCount, pressList4)
-    #         for i in crl_dict.values():
-    #             news_dict[dict_idx] = i
-    #             dict_idx += 1
+                news_dict_db[dict_idx_db] = i
+                dict_idx_db += 1
 
-    #     # 테이블에 저장
-    #     ID = 0
-    #     table = dynamodb.Table(date)
-    #     with table.batch_writer() as batch:
-    #         for i in news_dict.values():
-    #             batch.put_item(
-    #                 Item={
-    #                     'keyword': i['keyword'],
-    #                     'ID': str(ID),
-    #                     'content': i['content'],
-    #                     'title': i['title'],
-    #                     'url': i['url']
-    #                 }
-    #             )
-    #             ID += 1
+        # 테이블에 저장
+        table_db = dynamodb.Table(date)
+
+        ID = 0
+        with table_db.batch_writer() as batch:
+            # batch._flush_amount = 1 # 이거 해야 재귀 오류 안 안뜸
+            for i in news_dict_db.values():
+                item = {}
+                item['KEYWORD'] = i['keyword']
+                item['ID'] = str(ID)
+                item['CONTENT'] = i['content']
+                item['THUMBNAIL'] = i['thumbnail']
+                item['TITLE'] = i['title']
+                item['URL'] = i['url']
+                item['AGENCY'] = i['agency']
+
+                batch.put_item(Item=item)
+
+                ID += 1
+
+    elif nowhour == nowhour_cust and now.minute < nowmin_cust + 15:
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            # crl_dict = crawling_func(keyword, newsCount, pressList2)
+            crl_dict = [executor.submit(crawling_func, keyword, newsCount, pressList1) for keyword in keywords_DB[3:6]]
+
+        for future in as_completed(crl_dict):
+            result = future.result()
+
+            for i in result.values():
+                if i == 'not economy':
+                    break
+
+                news_dict_db[dict_idx_db] = i
+                dict_idx_db += 1
+
+        # 테이블에 저장
+        table_db = dynamodb.Table(date)
+
+        ID = 0
+        with table_db.batch_writer() as batch:
+            # batch._flush_amount = 1 # 이거 해야 재귀 오류 안 안뜸
+            for i in news_dict_db.values():
+                item = {}
+                item['KEYWORD'] = i['keyword']
+                item['ID'] = str(ID)
+                item['CONTENT'] = i['content']
+                item['THUMBNAIL'] = i['thumbnail']
+                item['TITLE'] = i['title']
+                item['URL'] = i['url']
+                item['AGENCY'] = i['agency']
+
+                batch.put_item(Item=item)
+
+                ID += 1
+
+    elif nowhour == nowhour_cust and now.minute < nowmin_cust + 20:
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            # crl_dict = crawling_func(keyword, newsCount, pressList2)
+            crl_dict = [executor.submit(crawling_func, keyword, newsCount, pressList1) for keyword in keywords_DB[6:9]]
+
+        for future in as_completed(crl_dict):
+            result = future.result()
+
+            for i in result.values():
+                if i == 'not economy':
+                    break
+
+                news_dict_db[dict_idx_db] = i
+                dict_idx_db += 1
+
+        # 테이블에 저장
+        table_db = dynamodb.Table(date)
+
+        ID = 0
+        with table_db.batch_writer() as batch:
+            # batch._flush_amount = 1 # 이거 해야 재귀 오류 안 안뜸
+            for i in news_dict_db.values():
+                item = {}
+                item['KEYWORD'] = i['keyword']
+                item['ID'] = str(ID)
+                item['CONTENT'] = i['content']
+                item['THUMBNAIL'] = i['thumbnail']
+                item['TITLE'] = i['title']
+                item['URL'] = i['url']
+                item['AGENCY'] = i['agency']
+
+                batch.put_item(Item=item)
+
+                ID += 1
+
+    elif nowhour == nowhour_cust and now.minute < nowmin_cust + 25:
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            # crl_dict = crawling_func(keyword, newsCount, pressList2)
+            crl_dict = [executor.submit(crawling_func, keyword, newsCount, pressList1) for keyword in keywords_DB[9:12]]
+
+        for future in as_completed(crl_dict):
+            result = future.result()
+
+            for i in result.values():
+                if i == 'not economy':
+                    break
+
+                news_dict_db[dict_idx_db] = i
+                dict_idx_db += 1
+
+        # 테이블에 저장
+        table_db = dynamodb.Table(date)
+
+        ID = 0
+        with table_db.batch_writer() as batch:
+            # batch._flush_amount = 1 # 이거 해야 재귀 오류 안 안뜸
+            for i in news_dict_db.values():
+                item = {}
+                item['KEYWORD'] = i['keyword']
+                item['ID'] = str(ID)
+                item['CONTENT'] = i['content']
+                item['THUMBNAIL'] = i['thumbnail']
+                item['TITLE'] = i['title']
+                item['URL'] = i['url']
+                item['AGENCY'] = i['agency']
+
+                batch.put_item(Item=item)
+
+                ID += 1
+
+    elif nowhour == nowhour_cust and now.minute < nowmin_cust + 30:
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            # crl_dict = crawling_func(keyword, newsCount, pressList2)
+            crl_dict = [executor.submit(crawling_func, keyword, newsCount, pressList1) for keyword in
+                        keywords_DB[12:15]]
+
+        for future in as_completed(crl_dict):
+            result = future.result()
+
+            for i in result.values():
+                if i == 'not economy':
+                    break
+
+                news_dict_db[dict_idx_db] = i
+                dict_idx_db += 1
+
+        # 테이블에 저장
+        table_db = dynamodb.Table(date)
+
+        ID = 0
+        with table_db.batch_writer() as batch:
+            # batch._flush_amount = 1 # 이거 해야 재귀 오류 안 안뜸
+            for i in news_dict_db.values():
+                item = {}
+                item['KEYWORD'] = i['keyword']
+                item['ID'] = str(ID)
+                item['CONTENT'] = i['content']
+                item['THUMBNAIL'] = i['thumbnail']
+                item['TITLE'] = i['title']
+                item['URL'] = i['url']
+                item['AGENCY'] = i['agency']
+
+                batch.put_item(Item=item)
+
+                ID += 1
+
+    elif nowhour == nowhour_cust and now.minute < nowmin_cust + 35:
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            # crl_dict = crawling_func(keyword, newsCount, pressList2)
+            crl_dict = [executor.submit(crawling_func, keyword, newsCount, pressList1) for keyword in
+                        keywords_DB[15:18]]
+
+        for future in as_completed(crl_dict):
+            result = future.result()
+
+            for i in result.values():
+                if i == 'not economy':
+                    break
+
+                news_dict_db[dict_idx_db] = i
+                dict_idx_db += 1
+
+        # 테이블에 저장
+        table_db = dynamodb.Table(date)
+
+        ID = 0
+        with table_db.batch_writer() as batch:
+            # batch._flush_amount = 1 # 이거 해야 재귀 오류 안 안뜸
+            for i in news_dict_db.values():
+                item = {}
+                item['KEYWORD'] = i['keyword']
+                item['ID'] = str(ID)
+                item['CONTENT'] = i['content']
+                item['THUMBNAIL'] = i['thumbnail']
+                item['TITLE'] = i['title']
+                item['URL'] = i['url']
+                item['AGENCY'] = i['agency']
+
+                batch.put_item(Item=item)
+
+                ID += 1
+
+    elif nowhour == nowhour_cust and now.minute < nowmin_cust + 40:
+        with ThreadPoolExecutor(max_workers=8) as executor:
+            # crl_dict = crawling_func(keyword, newsCount, pressList2)
+            crl_dict = [executor.submit(crawling_func, keyword, newsCount, pressList1) for keyword in
+                        keywords_DB[18:20]]
+
+        for future in as_completed(crl_dict):
+            result = future.result()
+
+            for i in result.values():
+                if i == 'not economy':
+                    break
+
+                news_dict_db[dict_idx_db] = i
+                dict_idx_db += 1
+
+        # 테이블에 저장
+        table_db = dynamodb.Table(date)
+
+        ID = 0
+        with table_db.batch_writer() as batch:
+            # batch._flush_amount = 1 # 이거 해야 재귀 오류 안 안뜸
+            for i in news_dict_db.values():
+                item = {}
+                item['KEYWORD'] = i['keyword']
+                item['ID'] = str(ID)
+                item['CONTENT'] = i['content']
+                item['THUMBNAIL'] = i['thumbnail']
+                item['TITLE'] = i['title']
+                item['URL'] = i['url']
+                item['AGENCY'] = i['agency']
+
+                batch.put_item(Item=item)
+
+                ID += 1
+    else:
+        print("에휴휴")

@@ -13,9 +13,10 @@ def crawling_main_text(soup, press):
     content = soup.find("article", {'id': 'dic_area'})
     if content == None:
         content = "a"
-    thumbnail = soup.find('article', {'id' : 'img1'})
-    if thumbnail == None:
-        thumbnail = 'a'
+    thumbnail = soup.find('img', {'id' : 'img1'})
+    img_url = thumbnail['data-src'] if thumbnail and 'data-src' in thumbnail.attrs else None
+    if img_url == None:
+        img_url = 'a'
 
     # 필요없는 사진, 요약 설명
     pho_exps = soup.select("#dic_area > span")
@@ -45,4 +46,4 @@ def crawling_main_text(soup, press):
     content = tf.trimming_text(press, content)
     time.sleep(sleep_sec)
 
-    return title, content, thumbnail
+    return title, content, img_url
