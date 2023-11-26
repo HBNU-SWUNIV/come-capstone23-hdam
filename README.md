@@ -27,9 +27,9 @@
   ![시스템 구성도](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/1146fc63-aa67-403d-8a51-cb2b81966a29)
   
   ### ▶️ Database
-  -  크롤링한 데이터 및 키워드 등의 정보를 DynamoDB에 테이블을 지정하여 저장
+  -  주간동안 크롤링한 뉴스기사, 키워드, 요약된 내용 등의 정보를 DynamoDB에 테이블을 지정하여 저장
 
-      ![데베(크기조정)](https://github.com/HBNU-SWUNIV/come-capstone23-pool/assets/125301371/7f5ecca7-029a-4782-a37c-bda79f3b4984)
+      ![image](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/fdc52559-77bf-418b-ab60-12d3dbfd51c4)
 
   ### ▶️ 키워드 정보 제공
   -  고정 키워드, 일일 키워드, 복합 키워드의 정보를 제공
@@ -65,11 +65,11 @@
  - ### 요약 모델 비교
    - TextRank와 DivRank는 비 인공지능 기반의 알고리즘이지만 인공지능 모델인 Kobart, T-5에 비해 응답 속도가 빠르고, 예상보다 정확도가 높아 사용하게 되었다. 다만 위 성능의 경우 단일 문서 요약을 측정하였기에 다중 문서 요약 정확도와 다를 수 있지만 상당한 상관관계가 있을것으로 예측한다.
   
-    ![모델 비교 그래프](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/9a7a4ace-f86e-44dd-9669-b2d4a6b4d85c)
+    ![image](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/66f8d992-69c4-4f46-9087-2f451662c1f5)
 
 
  - ### 최종 결과
-    ![최종 요약](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/66865438/91054590-dba4-41d3-ad66-2c77c1feb95e)
+    ![image](https://github.com/HBNU-SWUNIV/come-capstone23-hdam/assets/125301371/e300766c-befe-4457-8499-22e962fc29c5)
   
 ## Project Outcome
 
